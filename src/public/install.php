@@ -13,7 +13,7 @@ $schemaPath = "../schema/schema_v1.sql";
 $doWipeout = false;
 if (isset($_GET["wipeout"]))
 {
-	$doWipeout = true;
+    $doWipeout = true;
 }
 
 // Read Schema
@@ -23,25 +23,25 @@ fclose($file);
 
 try
 {
-	// Connect to DB
-	$db = new PDO("mysql:host=$host;dbname=$name;charset=utf8mb4", $user, $pass);
+    // Connect to DB
+    $db = new PDO("mysql:host=$host;dbname=$name;charset=utf8mb4", $user, $pass);
 
-	// Wipeout old data
-	if ($doWipeout)
-	{
-		$db->exec("DROP TABLE s_user;");
-		$db->exec("DROP TABLE s_system;");
-		$db->exec("DROP TABLE g_game;");
-		$db->exec("DROP TABLE r_ruleset;");
-	}
+    // Wipeout old data
+    if ($doWipeout)
+    {
+        $db->exec("DROP TABLE s_user;");
+        $db->exec("DROP TABLE s_system;");
+        $db->exec("DROP TABLE g_game;");
+        $db->exec("DROP TABLE r_ruleset;");
+    }
 
-	$db->query($schema_v1);
-	echo "Installation completed\n";
+    $db->query($schema_v1);
+    echo "Installation completed\n";
 }
 catch (PDOException $ex)
 {
-	  echo "An Error occured!\n";
-	  die($ex);
+      echo "An Error occured!\n";
+      die($ex);
 }
 
 ?>

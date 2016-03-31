@@ -24,7 +24,7 @@ $config = getConfig();
 // Create App
 $app = new \Slim\App(
 [
-	"settings" => $config
+    "settings" => $config
 ]);
 
 
@@ -45,9 +45,9 @@ $container['db'] = function ($c)
 {
     $db = $c['settings']['db'];
     $pdo = new PDO(
-		 "mysql:host=" . $db['host'] . ";dbname=" . $db['dbname'],
+         "mysql:host=" . $db['host'] . ";dbname=" . $db['dbname'],
          $db['user'],
-		 $db['pass']);
+         $db['pass']);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     return $pdo;
@@ -58,13 +58,13 @@ $container['db'] = function ($c)
 
 if ($config["authorizationOn"])
 {
-	$app->add(new TokenAuthenticationMiddleware(
+    $app->add(new TokenAuthenticationMiddleware(
         $container['db'],
-		[
-			"exclude" => "\/user\/login",
-			"realm" => "ORGA API"
-    	]
-	));
+        [
+            "exclude" => "\/user\/login",
+            "realm" => "ORGA API"
+        ]
+    ));
 }
 
 // Setup routes
@@ -78,10 +78,10 @@ $app->get('/', function () use($app)
 
 $app->get('/system', function (Request $request, Response $response)
 {
-	$this->logger->addInfo("Get system information (UNIMPLEMENTED)");
+    $this->logger->addInfo("Get system information (UNIMPLEMENTED)");
     //$mapper = new UserMapper($this->db);
     //$users = $mapper->getUsers();
-	$system = array();
+    $system = array();
     return responseWithJson($response, array("system" => $system), 200);
 });
 
@@ -90,37 +90,37 @@ $app->get('/system', function (Request $request, Response $response)
 
 $app->get('/system/user/login', function (Request $request, Response $response)
 {
-	// Only public endpoint, used to log in.
+    // Only public endpoint, used to log in.
     $username = false;
     $password = false;
     $server_params = $request->getServerParams();
 
     /* If using PHP in CGI mode. */
     if (preg_match("/Basic\s+(.*)$/i", $server_params["HTTP_AUTHORIZATION"], $matches))
-	{
+    {
        list($username, $password) = explode(":", base64_decode($matches[1]));
     }
-	else
-	{
-		if (isset($server_params["PHP_AUTH_USER"])) {
+    else
+    {
+        if (isset($server_params["PHP_AUTH_USER"])) {
            $username = $server_params["PHP_AUTH_USER"];
         }
         if (isset($server_params["PHP_AUTH_PW"])) {
            $password = $server_params["PHP_AUTH_PW"];
         }
     }
-	if (!$username || !$password)
-	{
-	    return $response->withStatus(401);
-	}
+    if (!$username || !$password)
+    {
+        return $response->withStatus(401);
+    }
 
-	$this->logger->addInfo("Login user $username");
+    $this->logger->addInfo("Login user $username");
     $mapper = new UserMapper($this->db);
     $data = $mapper->loginUser($username, $password);
-	if (isErrorResponse($data))
-	{
-		return responseWithJson($response, $data, 401);
-	}
+    if (isErrorResponse($data))
+    {
+        return responseWithJson($response, $data, 401);
+    }
     return responseWithJson($response, $data);
 });
 
@@ -136,7 +136,7 @@ $app->get('/system/user/logoff', function (Request $request, Response $response)
 
 $app->get('/system/users', function (Request $request, Response $response)
 {
-	$this->logger->addInfo("Get user list");
+    $this->logger->addInfo("Get user list");
     $mapper = new UserMapper($this->db);
     $users = $mapper->getUsers();
     return responseWithJson($response, array("users" => $users));
@@ -154,7 +154,7 @@ $app->get('/rulesets', function (Request $request, Response $response)
 
 $app->post('/ruleset', function (Request $request, Response $response)
 {
-	$data = $request->getParsedBody();
+    $data = $request->getParsedBody();
     $mapper = new RulesetMapper($this);
     $ruleset = $mapper->insert($data);
     return responseWithJson($response, array("ruleset" => $ruleset), 201);
@@ -171,7 +171,7 @@ $app->get('/ruleset/{id}', function (Request $request, Response $response, $args
 $app->put('/ruleset/{id}', function (Request $request, Response $response, $args)
 {
     $id = (int)$args['id'];
-	$data = $request->getParsedBody();
+    $data = $request->getParsedBody();
     $mapper = new RulesetMapper($this);
     $ruleset = $mapper->update($id, $data);
     return responseWithJson($response, array("ruleset" => $ruleset));
@@ -180,7 +180,7 @@ $app->put('/ruleset/{id}', function (Request $request, Response $response, $args
 $app->patch('/ruleset/{id}', function (Request $request, Response $response, $args)
 {
     $id = (int)$args['id'];
-	$data = $request->getParsedBody();
+    $data = $request->getParsedBody();
     $mapper = new RulesetMapper($this);
     $ruleset = $mapper->patch($id, $data);
     return responseWithJson($response, array("ruleset" => $ruleset));
@@ -199,7 +199,7 @@ $app->delete('/ruleset/{id}', function (Request $request, Response $response, $a
 
 $app->get('/games', function (Request $request, Response $response)
 {
-	$this->logger->addInfo("Get games list (UNIMPLEMENTED)");
+    $this->logger->addInfo("Get games list (UNIMPLEMENTED)");
     // $mapper = new GameMapper($this->db);
     $games = array(); // $mapper->getGames();
     return responseWithJson($response, array("games" => $games));
