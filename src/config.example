@@ -1,0 +1,32 @@
+<?php
+
+// This is a example for the config file. Create your own and name
+// it config.php
+
+// Init config array based on location (localhost or on server)
+
+function getConfig()
+{
+	$config = array();
+	$config['determineRouteBeforeAppMiddleware'] = true;
+	$config['displayErrorDetails'] = true;
+
+	if ($_SERVER['SERVER_NAME'] == 'localhost')
+	{
+		$config['db']['host']   = "";
+		$config['db']['user']   = "";
+		$config['db']['pass']   = "";
+		$config['db']['dbname'] = "";
+	}
+	else // productive server configuration
+	{
+		$config['db']['host']   = "";
+		$config['db']['user']   = "";
+		$config['db']['pass']   = "";
+		$config['db']['dbname'] = "";
+	}
+
+	return $config;
+}
+
+?>
