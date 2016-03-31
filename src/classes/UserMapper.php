@@ -197,6 +197,7 @@ class UserMapper
 			return $token;
 		}
 		return array(
+			"auth" => base64_encode($username.":".$token),
 	        "token" => $token,
 			"username" => $username,
 		    "id" => $id);
