@@ -4,14 +4,16 @@ require_once("classes/DbMapperAbs.php");
 
 class RulesetMapper extends DbMapperAbs
 {
-    public function __construct($app)
+    public function __construct($db, $logger)
     {
-        $this->db = $app->db;
-        $this->logger = $app->logger;
+        $this->db = $db;
+        $this->logger = $logger;
         $this->table = "r_ruleset";
         $this->name_single = "ruleset";
         $this->name_multi = "rulesets";
     }
+
+    // Query helpers
 
     protected function onInsert($data)
     {

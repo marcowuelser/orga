@@ -10,21 +10,12 @@ function getConfig()
     $config = array();
     $config['determineRouteBeforeAppMiddleware'] = true;
     $config['displayErrorDetails'] = true;
-
-    if ($_SERVER['SERVER_NAME'] == 'localhost')
-    {
-        $config['db']['host']   = "";
-        $config['db']['user']   = "";
-        $config['db']['pass']   = "";
-        $config['db']['dbname'] = "";
-    }
-    else // productive server configuration
-    {
-        $config['db']['host']   = "";
-        $config['db']['user']   = "";
-        $config['db']['pass']   = "";
-        $config['db']['dbname'] = "";
-    }
+    $config['authenticationOn'] = true;
+    
+    $config['db']['host']   = "";
+    $config['db']['user']   = "";
+    $config['db']['pass']   = "";
+    $config['db']['dbname'] = "";
 
     return $config;
 }

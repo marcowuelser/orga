@@ -1,5 +1,7 @@
 <?php
 
+include_once('util.php');
+
 function getErrorName($errorCode)
 {
     $errorCodes = array(
@@ -52,6 +54,12 @@ function createErrorResponse($errorCode, $description)
         "description" => $description,
     );
     return $data;
+}
+
+function responseWithJsonError($response, $errorCode, $description)
+{
+    $data = createErrorResponse($errorCode, $description);
+    return responseWithJson($response, $data);
 }
 
 ?>

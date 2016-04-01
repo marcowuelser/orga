@@ -200,7 +200,7 @@ abstract class DbMapperAbs
             throw new Exception("Field $field is missing");
             return;
         }
-        $value = $data[$field];
+        $value = $data[$field] ? 1 : 0;
 
         $fields[$field] = $value;
     }
@@ -229,6 +229,17 @@ abstract class DbMapperAbs
         {
             return;
         }
+
+        $fields[$field] = $value;
+    }
+
+    protected function optionalBool($field, $data, &$fields)
+    {
+        if (!array_key_exists($field, $data))
+        {
+            return;
+        }
+        $value = $data[$field] ? 1 : 0;
 
         $fields[$field] = $value;
     }

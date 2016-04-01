@@ -1,7 +1,6 @@
 <?php
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
-use \Slim\Middleware\HttpBasicAuthentication\AuthenticatorInterface;
 
 set_include_path(get_include_path() . PATH_SEPARATOR . '../../../');
 
@@ -10,6 +9,8 @@ require_once('vendor/autoload.php');
 require_once('../../../config.php');
 require_once('../../../version.php');
 include_once('util/util.php');
+
+include_once('routes.php');
 
 // Adjust url for subdirectory. This is required for slim routing to work properly 
 // $_SERVER['REQUEST_URI'] = str_replace('/api/v1/', '/', $_SERVER['REQUEST_URI']);
@@ -27,7 +28,6 @@ $app = new \Slim\App(
 [
     "settings" => $config
 ]);
-
 
 // Create containers
 $container = $app->getContainer();
@@ -57,178 +57,27 @@ $container['db'] = function ($c)
 // Authorization
 $container['auth'] = function($c)
 {
-    $auth = new Authorization($app);
+    $auth = new Authorization();
     return $auth;
 };
 
-
 // Setup middleware
-
 $tokenAuth = new TokenAuthenticationMiddleware(
-    $container['db'],
+    $container->get('auth'),
+    $container->get('db'),
+    $container->get('logger'),
     [
-        "exclude" => "\/user\/login",
-        "realm" => $ORGA_SERVER_REALM,
+        "exclude" => "\/user\/login"
     ]
-));
-
-$requireAdmin = new UserAuthorizationMiddleware(
-    $container['auth'],
-    UserAuthorizationMiddleware.RoleEqualOrBetter,
-    1);
-
-$requireAuthor = new UserAuthorizationMiddleware(
-    $container['auth'],
-    UserAuthorizationMiddleware.RoleEqualOrBetter,
-    2);
-
+);
 
 // Enable token authorization for all routes except for ../user/login.
-if ($config["authorizationOn"])
+if ($config["authenticationOn"])
 {
     $app->add($tokenAuth);
 }
 
-
-// Setup routes
-
-$app->get('/', function () use($app)
-{
-    echo "Welcome to the Slim 3.0 based $ORGA_SERVER_NAME_FULL";
-});
-
-
-// System
-
-$app->get('/system', function (Request $request, Response $response)
-{
-    $this->logger->addInfo("Get system information (UNIMPLEMENTED)");
-    //$mapper = new UserMapper($this->db);
-    //$users = $mapper->getUsers();
-    $system = array();
-    return responseWithJson($response, array("system" => $system), 200);
-});
-
-
-// User Authorization
-
-$app->get('/system/user/login', function (Request $request, Response $response)
-{
-    // Only public endpoint, used to log in.
-    $username = false;
-    $password = false;
-    $server_params = $request->getServerParams();
-
-    /* If using PHP in CGI mode. */
-    if (preg_match("/Basic\s+(.*)$/i", $server_params["HTTP_AUTHORIZATION"], $matches))
-    {
-       list($username, $password) = explode(":", base64_decode($matches[1]));
-    }
-    else
-    {
-        if (isset($server_params["PHP_AUTH_USER"])) {
-           $username = $server_params["PHP_AUTH_USER"];
-        }
-        if (isset($server_params["PHP_AUTH_PW"])) {
-           $password = $server_params["PHP_AUTH_PW"];
-        }
-    }
-    if (!$username || !$password)
-    {
-        return $response->withStatus(401);
-    }
-
-    $this->logger->addInfo("Login user $username");
-    $mapper = new UserMapper($this->db);
-    $data = $mapper->loginUser($username, $password);
-    if (isErrorResponse($data))
-    {
-        return responseWithJson($response, $data, 401);
-    }
-    return responseWithJson($response, $data);
-});
-
-$app->get('/system/user/logoff', function (Request $request, Response $response)
-{
-     $response = $response->withHeader("WWW-Authenticate", 'Basic realm="$ORGA_SERVER_REALM"');
-     $response = $response->withStatus(401);
-     return $response;
-});
-
-
-// User Management
-
-$app->get('/system/users', function (Request $request, Response $response)
-{
-    $this->logger->addInfo("Get user list");
-    $mapper = new UserMapper($this->db);
-    $users = $mapper->getUsers();
-    return responseWithJson($response, array("users" => $users));
-})->add($requireAdmin);
-
-
-// Ruleset Management
-
-$app->get('/rulesets', function (Request $request, Response $response)
-{
-    $mapper = new RulesetMapper($this);
-    $rulesets = $mapper->selectAll();
-    return responseWithJson($response, array("rulesets" => $rulesets));
-});
-
-$app->post('/ruleset', function (Request $request, Response $response)
-{
-    $data = $request->getParsedBody();
-    $mapper = new RulesetMapper($this);
-    $ruleset = $mapper->insert($data);
-    return responseWithJson($response, array("ruleset" => $ruleset), 201);
-})->add($requireAuthor);
-
-$app->get('/ruleset/{id}', function (Request $request, Response $response, $args)
-{
-    $id = (int)$args['id'];
-    $mapper = new RulesetMapper($this);
-    $ruleset = $mapper->selectById($id);
-    return responseWithJson($response, array ("ruleset" => $ruleset));
-});
-
-$app->put('/ruleset/{id}', function (Request $request, Response $response, $args)
-{
-    $id = (int)$args['id'];
-    $data = $request->getParsedBody();
-    $mapper = new RulesetMapper($this);
-    $ruleset = $mapper->update($id, $data);
-    return responseWithJson($response, array("ruleset" => $ruleset));
-})->add($requireAuthor);
-
-$app->patch('/ruleset/{id}', function (Request $request, Response $response, $args)
-{
-    $id = (int)$args['id'];
-    $data = $request->getParsedBody();
-    $mapper = new RulesetMapper($this);
-    $ruleset = $mapper->patch($id, $data);
-    return responseWithJson($response, array("ruleset" => $ruleset));
-})->add($requireAuthor);
-
-$app->delete('/ruleset/{id}', function (Request $request, Response $response, $args)
-{
-    $id = (int)$args['id'];
-    $mapper = new RulesetMapper($this);
-    $ruleset = $mapper->delete($id);
-    return responseWithJson($response, $ruleset);
-})->add($requireAdmin);
-
-
-// Game Management
-
-$app->get('/games', function (Request $request, Response $response)
-{
-    $this->logger->addInfo("Get games list (UNIMPLEMENTED)");
-    // $mapper = new GameMapper($this->db);
-    $games = array(); // $mapper->getGames();
-    return responseWithJson($response, array("games" => $games));
-});
-
+injectRoutes($app);
 
 
 // Run App

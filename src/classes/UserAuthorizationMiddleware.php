@@ -3,33 +3,41 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
+include_once('../../../enum.php');
+
 class UserAuthorizationMiddleware
 {
-    public const RoleEqualOrBetter = 1;
-    public const RoleInSelection = 2;
-
     public function __construct($auth, $mode, $required)
     {
         $this->auth = $auth;
         $this->mode = $mode;
-        $this->requiredRole = $required;
+        $this->required = $required;
     }
 
     public function __invoke(Request $request, Response $response, callable $next)
     {
         $ok = false;
+        $error = "";
         switch ($this->mode)
         {
-            case RoleEqualOrBetter:
-                $ok = checkRoleEqualOrBetter();
+            case Match::EqualOrBetter:
+                $ok = $this->checkRoleEqualOrBetter();
+                $error = "Role ".UserRole::toString($this->required)." required";
                 break;
 
-            case RoleInSelection:
-                $ok = checkRoleInSelection();
+            case Match::InSelection:
+                $ok = $this->checkRoleInSelection();
+                $error = "One of Roles (";
+                foreach ($this->required as $role)
+                {
+                    $error .= UserRole::toString($role)." ";
+                }
+                $error .= ") required";
                 break;
 
             default:
                 $ok = false;
+                $error = "Unknwon Mode";
                 break;
         }
 
@@ -40,6 +48,7 @@ class UserAuthorizationMiddleware
         }
         else
         {
+            $response->getBody()->write($error);
             return $response->withStatus(403);
         }
     }
