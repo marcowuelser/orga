@@ -11,6 +11,20 @@ class Authorization
         $this->currentUser = $currentUser;
     }
 
+    public function isCurrentUser()
+    {
+        return $this->currentUser != null;
+    }
+
+    public function getCurrentUserId()
+    {
+        if (!$this->isCurrentUser())
+        {
+            return 0;
+        }
+        return $this->currentUser['id'];
+    }
+
     public function isRoleEqualOrHigher($role)
     {
         return $this->currentUser['role_id'] >= $role;

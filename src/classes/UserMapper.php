@@ -113,15 +113,17 @@ class UserMapper extends DbMapperAbs
         {
             return false;
         }
-    }    
+    }
 
-    public function setPassword($id, $password)
+    public function setPassword($id, $data)
     {
         $sql = "UPDATE s_user SET password=PASSWORD(:field_password) WHERE id=:field_id;";
         try
         {
+            $fields = array();
+            $this->requireString("password", $data, $fields);
             $stmt = $this->db->prepare($sql);
-            $stmt->bindValue(":field_password", $password);
+            $stmt->bindValue(":field_password", $fields['password']);
             $stmt->bindValue(":field_id", $id, PDO::PARAM_INT);
             if (!$stmt->execute())
             {
@@ -129,7 +131,7 @@ class UserMapper extends DbMapperAbs
             }
             else
             {
-                return $this->toPublicData($data);
+                return $this->selectById($id);
             }
         }
         catch (PDOException $ex)
@@ -161,7 +163,7 @@ class UserMapper extends DbMapperAbs
     {
         $fields = array();
         $this->optionalString("name", $data, $fields);
-        $this->optionalPassword("description", $data, $fields);
+        $this->optionalString("username", $data, $fields);
         return $fields;
     }
 

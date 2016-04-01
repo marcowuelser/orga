@@ -1,3 +1,4 @@
-vendor/*
-config.php
+src/vendor/*
+src/config.php
+src/public/api/logs/*
 *~

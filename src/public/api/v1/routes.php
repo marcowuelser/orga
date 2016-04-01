@@ -87,6 +87,14 @@ function injectRoutes($app)
         return responseWithJson($response, $users);
     })->add($requireAdmin);
 
+    $app->post('/system/user', function (Request $request, Response $response)
+    {
+        $data = $request->getParsedBody();
+        $mapper = new UserMapper($this->db, $this->logger);
+        $users = $mapper->insert($data);
+        return responseWithJson($response, $users);
+    })->add($requireAdmin);
+
     $app->get('/system/user/{id}', function (Request $request, Response $response, $args)
     {
         $id = (int)$args['id'];
@@ -103,6 +111,32 @@ function injectRoutes($app)
         $users = $mapper->patch($id, $data);
         return responseWithJson($response, $users);
     })->add($requireAdmin);
+
+    $app->put('/system/user/{id}/password', function (Request $request, Response $response, $args)
+    {
+        $id = (int)$args['id'];
+        $data = $request->getParsedBody();
+        $mapper = new UserMapper($this->db, $this->logger);
+        $users = $mapper->setPassword($id, $data);
+        return responseWithJson($response, $users);
+    })->add($requireAdmin);
+
+    $app->get('/system/user', function (Request $request, Response $response)
+    {
+        $id = $this->auth->getCurrentUserId();
+        $mapper = new UserMapper($this->db, $this->logger);
+        $users = $mapper->selectById($id);
+        return responseWithJson($response, $users);
+    });
+
+    $app->put('/system/user/password', function (Request $request, Response $response)
+    {
+        $id = $this->auth->getCurrentUserId();
+        $data = $request->getParsedBody();
+        $mapper = new UserMapper($this->db, $this->logger);
+        $users = $mapper->setPassword($id, $data);
+        return responseWithJson($response, $users);
+    });
 
     // Ruleset Management
 
