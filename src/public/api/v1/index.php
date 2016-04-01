@@ -8,9 +8,10 @@ set_include_path(get_include_path() . PATH_SEPARATOR . '../../../');
 // Perform autoload of slim classes
 require_once('vendor/autoload.php');
 require_once('../../../config.php');
+require_once('../../../version.php');
 include_once('util/util.php');
 
-// Adjust url for subdirectory. This is required for slim routing to work peroperly
+// Adjust url for subdirectory. This is required for slim routing to work properly 
 // $_SERVER['REQUEST_URI'] = str_replace('/api/v1/', '/', $_SERVER['REQUEST_URI']);
 
 // Autoload classes
@@ -53,24 +54,47 @@ $container['db'] = function ($c)
     return $pdo;
 };
 
+// Authorization
+$container['auth'] = function($c)
+{
+    $auth = new Authorization($app);
+    return $auth;
+};
+
 
 // Setup middleware
 
+$tokenAuth = new TokenAuthenticationMiddleware(
+    $container['db'],
+    [
+        "exclude" => "\/user\/login",
+        "realm" => $ORGA_SERVER_REALM,
+    ]
+));
+
+$requireAdmin = new UserAuthorizationMiddleware(
+    $container['auth'],
+    UserAuthorizationMiddleware.RoleEqualOrBetter,
+    1);
+
+$requireAuthor = new UserAuthorizationMiddleware(
+    $container['auth'],
+    UserAuthorizationMiddleware.RoleEqualOrBetter,
+    2);
+
+
+// Enable token authorization for all routes except for ../user/login.
 if ($config["authorizationOn"])
 {
-    $app->add(new TokenAuthenticationMiddleware(
-        $container['db'],
-        [
-            "exclude" => "\/user\/login",
-            "realm" => "ORGA API"
-        ]
-    ));
+    $app->add($tokenAuth);
 }
 
+
 // Setup routes
+
 $app->get('/', function () use($app)
 {
-    echo "Welcome to Slim 3.0 based ORGA API - Version 1.0";
+    echo "Welcome to the Slim 3.0 based $ORGA_SERVER_NAME_FULL";
 });
 
 
@@ -126,7 +150,7 @@ $app->get('/system/user/login', function (Request $request, Response $response)
 
 $app->get('/system/user/logoff', function (Request $request, Response $response)
 {
-     $response = $response->withHeader("WWW-Authenticate", 'Basic realm="Protected"');
+     $response = $response->withHeader("WWW-Authenticate", 'Basic realm="$ORGA_SERVER_REALM"');
      $response = $response->withStatus(401);
      return $response;
 });
@@ -140,7 +164,7 @@ $app->get('/system/users', function (Request $request, Response $response)
     $mapper = new UserMapper($this->db);
     $users = $mapper->getUsers();
     return responseWithJson($response, array("users" => $users));
-});
+})->add($requireAdmin);
 
 
 // Ruleset Management
@@ -158,7 +182,7 @@ $app->post('/ruleset', function (Request $request, Response $response)
     $mapper = new RulesetMapper($this);
     $ruleset = $mapper->insert($data);
     return responseWithJson($response, array("ruleset" => $ruleset), 201);
-});
+})->add($requireAuthor);
 
 $app->get('/ruleset/{id}', function (Request $request, Response $response, $args)
 {
@@ -175,7 +199,7 @@ $app->put('/ruleset/{id}', function (Request $request, Response $response, $args
     $mapper = new RulesetMapper($this);
     $ruleset = $mapper->update($id, $data);
     return responseWithJson($response, array("ruleset" => $ruleset));
-});
+})->add($requireAuthor);
 
 $app->patch('/ruleset/{id}', function (Request $request, Response $response, $args)
 {
@@ -184,7 +208,7 @@ $app->patch('/ruleset/{id}', function (Request $request, Response $response, $ar
     $mapper = new RulesetMapper($this);
     $ruleset = $mapper->patch($id, $data);
     return responseWithJson($response, array("ruleset" => $ruleset));
-});
+})->add($requireAuthor);
 
 $app->delete('/ruleset/{id}', function (Request $request, Response $response, $args)
 {
@@ -192,7 +216,7 @@ $app->delete('/ruleset/{id}', function (Request $request, Response $response, $a
     $mapper = new RulesetMapper($this);
     $ruleset = $mapper->delete($id);
     return responseWithJson($response, $ruleset);
-});
+})->add($requireAdmin);
 
 
 // Game Management
