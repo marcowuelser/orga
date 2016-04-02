@@ -144,7 +144,7 @@ function injectRoutes($app)
     {
         $mapper = new RulesetMapper($this->db, $this->logger);
         $rulesets = $mapper->selectAll();
-        return responseWithJson($response, array("rulesets" => $rulesets));
+        return responseWithJson($response, $rulesets);
     });
 
     $app->post('/ruleset', function (Request $request, Response $response)
@@ -152,7 +152,7 @@ function injectRoutes($app)
         $data = $request->getParsedBody();
         $mapper = new RulesetMapper($this->db, $this->logger);
         $ruleset = $mapper->insert($data);
-        return responseWithJson($response, array("ruleset" => $ruleset), 201);
+        return responseWithJson($response, $ruleset, 201);
     })->add($requireAuthor);
 
     $app->get('/ruleset/{id}', function (Request $request, Response $response, $args)
@@ -160,7 +160,7 @@ function injectRoutes($app)
         $id = (int)$args['id'];
         $mapper = new RulesetMapper($this->db, $this->logger);
         $ruleset = $mapper->selectById($id);
-        return responseWithJson($response, array ("ruleset" => $ruleset));
+        return responseWithJson($response, $ruleset);
     });
 
     $app->put('/ruleset/{id}', function (Request $request, Response $response, $args)
@@ -169,7 +169,7 @@ function injectRoutes($app)
         $data = $request->getParsedBody();
         $mapper = new RulesetMapper($this->db, $this->logger);
         $ruleset = $mapper->update($id, $data);
-        return responseWithJson($response, array("ruleset" => $ruleset));
+        return responseWithJson($response, $ruleset);
     })->add($requireAuthor);
 
     $app->patch('/ruleset/{id}', function (Request $request, Response $response, $args)
@@ -178,7 +178,7 @@ function injectRoutes($app)
         $data = $request->getParsedBody();
         $mapper = new RulesetMapper($this->db, $this->logger);
         $ruleset = $mapper->patch($id, $data);
-        return responseWithJson($response, array("ruleset" => $ruleset));
+        return responseWithJson($response, $ruleset);
     })->add($requireAuthor);
 
     $app->delete('/ruleset/{id}', function (Request $request, Response $response, $args)
@@ -197,7 +197,7 @@ function injectRoutes($app)
         $this->logger->addInfo("Get games list (UNIMPLEMENTED)");
         // $mapper = new GameMapper($this->db);
         $games = array(); // $mapper->getGames();
-        return responseWithJson($response, array("games" => $games));
+        return responseWithJson($response, $games);
     });
 
 }
