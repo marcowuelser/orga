@@ -200,7 +200,13 @@ abstract class DbMapperAbs
             throw new Exception("Field $field is missing");
             return;
         }
-        $value = $data[$field] ? 1 : 0;
+        $value = $data[$field];
+        if (!is_int($value) && !is_bool($value))
+        {
+            throw new Exception("Field $field is no bool");
+            return;
+        }
+        $value = $value ? 1 : 0;
 
         $fields[$field] = $value;
     }
@@ -213,6 +219,11 @@ abstract class DbMapperAbs
             return;
         }
         $value = $data[$field];
+        if (!is_int($value))
+        {
+            throw new Exception("Field $field is no int");
+            return;
+        }
 
         $fields[$field] = $value;
     }
@@ -239,7 +250,28 @@ abstract class DbMapperAbs
         {
             return;
         }
-        $value = $data[$field] ? 1 : 0;
+        $value = $data[$field];
+        if (!is_int($value) && !is_bool($value))
+        {
+            return;
+        }
+        $value = $value ? 1 : 0;
+
+        $fields[$field] = $value;
+    }
+
+    protected function optionalInt($field, $data, &$fields)
+    {
+        if (!array_key_exists($field, $data))
+        {
+            return;
+        }
+        $value = $data[$field];
+
+        if (!is_int($value))
+        {
+            return;
+        }
 
         $fields[$field] = $value;
     }

@@ -148,6 +148,7 @@ class UserMapper extends DbMapperAbs
         $fields = array();
         $this->requireString("name", $data, $fields);
         $this->requireString("username", $data, $fields);
+        $this->requireInt("role_id", $data, $fields);
         return $fields;
     }
 
@@ -156,6 +157,7 @@ class UserMapper extends DbMapperAbs
         $fields = array();
         $this->requireString("name", $data, $fields);
         $this->requireString("username", $data, $fields);
+        $this->requireInt("role_id", $data, $fields);
         return $fields;
     }
 
@@ -164,6 +166,7 @@ class UserMapper extends DbMapperAbs
         $fields = array();
         $this->optionalString("name", $data, $fields);
         $this->optionalString("username", $data, $fields);
+        $this->optionalInt("role_id", $data, $fields);
         return $fields;
     }
 
@@ -171,10 +174,10 @@ class UserMapper extends DbMapperAbs
     {
         $id = $data["id"];
         return array(
-            "id" => $id,
+            "id" => intval ($id),
             "username" => $data["username"],
             "name" => $data["name"],
-            "role_id" => $data["role_id"],
+            "role_id" => intval ($data["role_id"]),
             "uri" => "/src/slim_test/src/public/api/v1/system/user/$id");
     }
 }
