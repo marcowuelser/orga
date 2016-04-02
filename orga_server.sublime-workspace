@@ -12,50 +12,10 @@
 	"buffers":
 	[
 		{
-			"file": "README.md",
-			"settings":
-			{
-				"buffer_size": 203,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "src/public/api/v1/index.php",
-			"settings":
-			{
-				"buffer_size": 6415,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "src/version.php",
-			"settings":
-			{
-				"buffer_size": 421,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "src/classes/Authorization.php",
-			"settings":
-			{
-				"buffer_size": 371,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "tool/get.sh",
-			"settings":
-			{
-				"buffer_size": 227,
-				"line_ending": "Windows"
-			}
-		},
-		{
 			"file": "src/classes/UserAuthorizationMiddleware.php",
 			"settings":
 			{
-				"buffer_size": 1570,
+				"buffer_size": 1967,
 				"line_ending": "Windows"
 			}
 		},
@@ -63,7 +23,87 @@
 			"file": "src/classes/TokenAuthenticationMiddleware.php",
 			"settings":
 			{
-				"buffer_size": 2396,
+				"buffer_size": 2129,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/public/api/v1/routes.php",
+			"settings":
+			{
+				"buffer_size": 7148,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "tool/login.sh",
+			"settings":
+			{
+				"buffer_size": 140,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": ".gitignore",
+			"settings":
+			{
+				"buffer_size": 53,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/util/error.php",
+			"settings":
+			{
+				"buffer_size": 1474,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/public/api/v1/index.php",
+			"settings":
+			{
+				"buffer_size": 1959,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/classes/Authorization.php",
+			"settings":
+			{
+				"buffer_size": 3072,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/util/util.php",
+			"settings":
+			{
+				"buffer_size": 737,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/classes/DbMapperAbs.php",
+			"settings":
+			{
+				"buffer_size": 8231,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/classes/SystemMapper.php",
+			"settings":
+			{
+				"buffer_size": 1033,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/classes/UserMapper.php",
+			"settings":
+			{
+				"buffer_size": 5098,
 				"line_ending": "Windows"
 			}
 		}
@@ -100,15 +140,19 @@
 	},
 	"expanded_folders":
 	[
-		"/C/src/private/orga_server/src",
-		"/C/src/private/orga_server/src/classes",
-		"/C/src/private/orga_server/src/public",
-		"/C/src/private/orga_server/src/public/api",
-		"/C/src/private/orga_server/src/public/api/v1",
-		"/C/src/private/orga_server/tool"
+		"/D/xampp/htdocs/src/orga_server/src",
+		"/D/xampp/htdocs/src/orga_server/tool",
+		"/D/xampp/htdocs/src/orga_server"
 	],
 	"file_history":
 	[
+		"/D/xampp/htdocs/src/orga_server/src/config.php",
+		"/D/xampp/htdocs/src/orga_server/src/version.php",
+		"/D/xampp/htdocs/src/orga_server/src/enum.php",
+		"/D/xampp/htdocs/src/orga_server/src/classes/RulesetMapper.php",
+		"/D/xampp/htdocs/src/orga_server/src/config.example",
+		"/D/xampp/htdocs/src/orga_server/tool/get.sh",
+		"/D/xampp/htdocs/src/orga_server/README.md",
 		"/C/Users/wuelser/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
 		"/C/src/private/orga_web_client/src/public/navbar.html",
 		"/C/src/private/test.php",
@@ -116,13 +160,14 @@
 	],
 	"find":
 	{
-		"height": 23.0
+		"height": 34.0
 	},
 	"find_in_files":
 	{
-		"height": 0.0,
+		"height": 90.0,
 		"where_history":
 		[
+			""
 		]
 	},
 	"find_state":
@@ -130,6 +175,15 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"$this->auth->getCurrentUser",
+			"{\n",
+			";\n",
+			"prin",
+			"echo",
+			"environment",
+			"realm",
+			"setToken",
+			"Mapper",
 			"V"
 		],
 		"highlight": true,
@@ -148,61 +202,36 @@
 	"folders":
 	[
 		{
-			"path": "C:\\src\\private\\orga_server\\src"
+			"path": "D:\\xampp\\htdocs\\src\\orga_server\\src"
 		},
 		{
-			"path": "C:\\src\\private\\orga_server\\tool"
+			"path": "D:\\xampp\\htdocs\\src\\orga_server\\tool"
+		},
+		{
+			"path": "D:\\xampp\\htdocs\\src\\orga_server"
 		}
 	],
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 2,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "README.md",
+					"file": "src/classes/UserAuthorizationMiddleware.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 203,
+						"buffer_size": 1967,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								203,
-								203
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Markdown/Markdown.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "src/public/api/v1/index.php",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 6415,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2002,
-								2002
+								1349,
+								1349
 							]
 						],
 						"settings":
@@ -212,117 +241,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 765.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "src/version.php",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 421,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								343,
-								343
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/PHP/PHP.sublime-syntax"
-						},
-						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "src/classes/Authorization.php",
+					"buffer": 1,
+					"file": "src/classes/TokenAuthenticationMiddleware.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 371,
+						"buffer_size": 2129,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								326,
-								326
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/PHP/PHP.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				}
-			]
-		},
-		{
-			"selected": 1,
-			"sheets":
-			[
-				{
-					"buffer": 4,
-					"file": "tool/get.sh",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 227,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								227,
-								227
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/ShellScript/Shell-Unix-Generic.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "src/classes/UserAuthorizationMiddleware.php",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1570,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								171,
-								188
+								379,
+								379
 							]
 						],
 						"settings":
@@ -339,20 +278,112 @@
 					"type": "text"
 				},
 				{
-					"buffer": 6,
-					"file": "src/classes/TokenAuthenticationMiddleware.php",
+					"buffer": 2,
+					"file": "src/public/api/v1/routes.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2396,
+						"buffer_size": 7148,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								2396
+								5401,
+								5401
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2115.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "tool/login.sh",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 140,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								12,
+								12
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ShellScript/Shell-Unix-Generic.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": ".gitignore",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 53,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								49,
+								49
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 5,
+					"file": "src/util/error.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1474,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1301,
+								1322
 							]
 						],
 						"settings":
@@ -365,7 +396,187 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "src/public/api/v1/index.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1959,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								334,
+								260
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "src/classes/Authorization.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3072,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								338,
+								338
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 450.0,
+						"zoom_level": 1.0
+					},
 					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "src/util/util.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 737,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								102,
+								118
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "src/classes/DbMapperAbs.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8231,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2258,
+								2259
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1575.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "src/classes/SystemMapper.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1033,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								809,
+								809
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "src/classes/UserMapper.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5098,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3940,
+								3940
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1635.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
 					"type": "text"
 				}
 			]
@@ -455,7 +666,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 150.0,
+	"side_bar_width": 243.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
