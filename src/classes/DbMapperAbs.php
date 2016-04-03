@@ -23,7 +23,7 @@ abstract class DbMapperAbs
             }
             else
             {
-                return createErrorResponse(1002, "No $this->name_multi found");
+                return array($this->name_multi => $data);
             }
         }
         catch (PDOException $ex)
