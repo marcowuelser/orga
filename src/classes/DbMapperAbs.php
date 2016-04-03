@@ -276,6 +276,11 @@ abstract class DbMapperAbs
         $fields[$field] = $value;
     }
 
+    protected function getEntryURI($id)
+    {
+       return $this->uriBase . $this->uriSingle . '/' . $id;
+    }
+
     abstract protected function onInsert($data);
     abstract protected function onUpdate($data);
     abstract protected function onPatch($data);
@@ -293,15 +298,15 @@ abstract class DbMapperAbs
             }
             $notFirst = true;
 
-            $sql .= " ".$field." = :field_".$field;
+            $sql .= " `".$field."` = :field_".$field;
         }
-        $sql .= " WHERE id = :field_key LIMIT 1;";
+        $sql .= " WHERE `id` = :field_key LIMIT 1;";
         return $sql;
     }
 
     private function createSqlInsert($table, $fields)
     {
-        $sql = "INSERT INTO $table (";
+        $sql = "INSERT INTO `$table` (";
         $notFirst = false;
         foreach ($fields as $field => $value)
         {
@@ -311,7 +316,7 @@ abstract class DbMapperAbs
             }
             $notFirst = true;
 
-            $sql .= " ".$field." ";
+            $sql .= " `".$field."` ";
         }
         $sql .= ") VALUES (";
         $notFirst = false;
@@ -331,7 +336,7 @@ abstract class DbMapperAbs
 
     private function createSqlDelete($table)
     {
-        $sql = "DELETE FROM $table WHERE id = :field_key LIMIT 1;";
+        $sql = "DELETE FROM `$table` WHERE `id` = :field_key LIMIT 1;";
         return $sql;
     }
 
@@ -348,4 +353,6 @@ abstract class DbMapperAbs
     protected $table = '';
     protected $name_single = '';
     protected $name_multi = '';
+    protected $uriBase = "http://localhost/src/orga_server/src/public/api/v1/";
+    protected $uriSingle = '';
 }

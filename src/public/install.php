@@ -31,8 +31,15 @@ try
     {
         $db->exec("DROP TABLE s_user;");
         $db->exec("DROP TABLE s_system;");
-        $db->exec("DROP TABLE g_game;");
+
         $db->exec("DROP TABLE r_ruleset;");
+        $db->exec("DROP TABLE r_entity;");
+        $db->exec("DROP TABLE r_entity_field;");
+        $db->exec("DROP TABLE r_entity_instance;");
+        $db->exec("DROP TABLE r_entity_instance_value;");
+
+        $db->exec("DROP TABLE g_game;");
+        $db->exec("DROP TABLE g_player;");
     }
 
     $db->query($schema_v1);

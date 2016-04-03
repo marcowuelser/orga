@@ -11,6 +11,7 @@ class UserMapper extends DbMapperAbs
         $this->table = "s_user";
         $this->name_single = "user";
         $this->name_multi = "users";
+        $this->uriSingle = "system/user";
     }
 
     public function selectByName($name)
@@ -146,27 +147,55 @@ class UserMapper extends DbMapperAbs
     protected function onInsert($data)
     {
         $fields = array();
+
+        // user fields
         $this->requireString("name", $data, $fields);
         $this->requireString("username", $data, $fields);
         $this->requireInt("role_id", $data, $fields);
+        $this->optionalBool("defaultOrder", $data, $fields);
+        $this->optionalInt("active", $data, $fields);
+
+        // system fields
+        if (!isset($fields['defaultOrder']))
+        {
+            $fields['defaultOrder'] = 0;
+        }
+        if (!isset($fields['active']))
+        {
+            $fields['active'] = true;
+        }
         return $fields;
     }
 
     protected function onUpdate($data)
     {
         $fields = array();
+
+        // user fields
         $this->requireString("name", $data, $fields);
         $this->requireString("username", $data, $fields);
         $this->requireInt("role_id", $data, $fields);
+        $this->requireInt("defaultOrder", $data, $fields);
+        $this->requireBool("active", $data, $fields);
+
         return $fields;
     }
 
     protected function onPatch($data)
     {
         $fields = array();
+
+        // user fields
         $this->optionalString("name", $data, $fields);
         $this->optionalString("username", $data, $fields);
         $this->optionalInt("role_id", $data, $fields);
+        $this->optionalInt("defaultOrder", $data, $fields);
+        $this->optionalBool("active", $data, $fields);
+        if (empty($fields))
+        {
+            throw new Exception("No fields in patch request");
+        }
+
         return $fields;
     }
 
@@ -178,6 +207,8 @@ class UserMapper extends DbMapperAbs
             "username" => $data["username"],
             "name" => $data["name"],
             "role_id" => intval ($data["role_id"]),
-            "uri" => "/src/slim_test/src/public/api/v1/system/user/$id");
+            "defaultOrder" => intval ($data["defaultOrder"]),
+            "active" => intval ($data["active"]) != 0,
+            "uri" => $this->getEntryURI($id));
     }
 }
