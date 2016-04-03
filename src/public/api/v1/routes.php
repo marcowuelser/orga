@@ -77,6 +77,31 @@ function injectRoutes($app)
         return $response;
     });
 
+    $app->get('/system/user', function (Request $request, Response $response)
+    {
+        $id = $this->auth->getCurrentUserId();
+        $mapper = new UserMapper($this->db, $this->logger);
+        $users = $mapper->selectById($id);
+        return responseWithJson($response, $users);
+    });
+
+    $app->patch('/system/user', function (Request $request, Response $response)
+    {
+        $id = $this->auth->getCurrentUserId();
+        $data = $request->getParsedBody();
+        $mapper = new UserMapper($this->db, $this->logger);
+        $user = $this->auth->patchCurrentUser($data, $mapper);
+        return responseWithJson($response, $user);
+    });
+
+    $app->put('/system/user/password', function (Request $request, Response $response)
+    {
+        $id = $this->auth->getCurrentUserId();
+        $data = $request->getParsedBody();
+        $mapper = new UserMapper($this->db, $this->logger);
+        $user = $this->auth->changeCurrentUserPassword($data, $mapper);
+        return responseWithJson($response, $user);
+    });
 
     // User Management
 
@@ -120,23 +145,6 @@ function injectRoutes($app)
         $users = $mapper->setPassword($id, $data);
         return responseWithJson($response, $users);
     })->add($requireAdmin);
-
-    $app->get('/system/user', function (Request $request, Response $response)
-    {
-        $id = $this->auth->getCurrentUserId();
-        $mapper = new UserMapper($this->db, $this->logger);
-        $users = $mapper->selectById($id);
-        return responseWithJson($response, $users);
-    });
-
-    $app->put('/system/user/password', function (Request $request, Response $response)
-    {
-        $id = $this->auth->getCurrentUserId();
-        $data = $request->getParsedBody();
-        $mapper = new UserMapper($this->db, $this->logger);
-        $users = $mapper->setPassword($id, $data);
-        return responseWithJson($response, $users);
-    });
 
     $app->get('/system/users/roles', function (Request $request, Response $response)
     {

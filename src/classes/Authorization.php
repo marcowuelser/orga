@@ -25,6 +25,15 @@ class Authorization
         return $this->currentUser['id'];
     }
 
+    public function getCurrentUsername()
+    {
+        if (!$this->isCurrentUser())
+        {
+            return "";
+        }
+        return $this->currentUser['username'];
+    }
+
     public function isRoleEqualOrHigher($role)
     {
         return $this->currentUser['role_id'] >= $role;
@@ -82,10 +91,42 @@ class Authorization
 
     public function logoutCurrentUser($mapper)
     {
-        print_r2($this->currentUser);
-        $id = $this->currentUser['id'];
+        $id = $this->getCurrentUserId();
         $mapper->clearToken($id);
         return;
+    }
+
+    public function patchCurrentUser($data, $mapper)
+    {
+        $id = $this->getCurrentUserId();
+        $filtered = array();
+        if (isset($data['name']))
+        {
+            $filtered['name'] = $data['name'];
+        }
+        if (isset($data['username']))
+        {
+            $filtered['username'] = $data['username'];
+        }
+        return $mapper->patch($id, $filtered);
+    }
+
+    public function changeCurrentUserPassword($data, $mapper)
+    {
+        $passwordOld = '';
+        $passwordNew = '';
+        if (isset($data['password_old']))
+        {
+            $passwordOld = $data['password_old'];
+        }
+        $id = $this->getCurrentUserId();
+
+        $user = $mapper->selectByCredentials($this->getCurrentUsername(), $passwordOld);
+        if (isErrorResponse($user))
+        {
+            return $user;
+        }
+        return $mapper->setPassword($id, $data);
     }
 
     // static util

@@ -13,6 +13,7 @@ function getErrorName($errorCode)
                 2002 => "Unimplemented",
 
                 3001 => "Login failed",
+                3002 => "Not Authorized",
     );
 
     if (array_key_exists($errorCode, $errorCodes))
@@ -35,6 +36,7 @@ function getHttpStatusCode($errorCode)
                 2002 => 500, // Internal Server Error
 
                 3001 => 401, // Unauthorized
+                3002 => 403, // Forbidden
     );
 
     if (array_key_exists($errorCode, $errorCodes))
