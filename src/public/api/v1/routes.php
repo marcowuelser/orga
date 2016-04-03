@@ -138,6 +138,11 @@ function injectRoutes($app)
         return responseWithJson($response, $users);
     });
 
+    $app->get('/system/users/roles', function (Request $request, Response $response)
+    {
+        return responseWithJson($response, UserRole::toAssocArray());
+    });
+
     // Ruleset Management
 
     $app->get('/rulesets', function (Request $request, Response $response)

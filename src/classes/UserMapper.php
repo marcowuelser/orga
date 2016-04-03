@@ -1,6 +1,7 @@
 <?php
 
 require_once("classes/DbMapperAbs.php");
+include_once("enum.php");
 
 class UserMapper extends DbMapperAbs
 {
@@ -207,6 +208,7 @@ class UserMapper extends DbMapperAbs
             "username" => $data["username"],
             "name" => $data["name"],
             "role_id" => intval ($data["role_id"]),
+            "role" => UserRole::toString($data["role_id"]),
             "defaultOrder" => intval ($data["defaultOrder"]),
             "active" => intval ($data["active"]) != 0,
             "uri" => $this->getEntryURI($id));

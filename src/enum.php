@@ -28,6 +28,36 @@ class UserRole
         }
         return "Unknown";
     }
+
+    public static function toList()
+    {
+        return array(
+            UserRole::RoleAdmin,
+            UserRole::RoleAuthor,
+            UserRole::RoleUser,
+            UserRole::RoleGuest,
+        );
+    }
+
+    public static function toArray()
+    {
+        $array = array();
+        foreach (UserRole::toList() as $id)
+        {
+            $array[$id] = UserRole::toString($id);
+        }
+        return $array;
+    }
+
+    public static function toAssocArray()
+    {
+        $array = array();
+        foreach (UserRole::toList() as $id)
+        {
+            $array[] = array("id" => $id, "name" => UserRole::toString($id));
+        }
+        return $array;
+    }
 }
 
 ?>
