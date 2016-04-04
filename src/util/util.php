@@ -18,8 +18,9 @@ function responseWithJson($response, $data, $okStatusCode = 200)
         $response = $response->withStatus($okStatusCode);
     }
 
-    $response = $response->withHeader('Content-Type', 'application/json');
-    $response->getBody()->write(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+    $response = $response->withHeader('Content-Type', 'application/json;charset=utf-8');
+    $body = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES |  JSON_UNESCAPED_UNICODE);
+    $response->getBody()->write($body);
     return $response;
 }
 

@@ -12,6 +12,12 @@ include_once('util/util.php');
 
 include_once('routes.php');
 
+mb_language("uni");
+mb_regex_encoding('UTF-8');
+mb_internal_encoding("UTF-8");
+setlocale (LC_ALL, 'de_CH.utf8');
+
+
 // Adjust url for subdirectory. This is required for slim routing to work properly 
 // $_SERVER['REQUEST_URI'] = str_replace('/api/v1/', '/', $_SERVER['REQUEST_URI']);
 
@@ -51,6 +57,8 @@ $container['db'] = function ($c)
          $db['pass']);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    $pdo->setAttribute(PDO::MYSQL_ATTR_INIT_COMMAND, "SET NAMES `utf8`");
+    $pdo->exec("SET CHARACTER SET utf8");
     return $pdo;
 };
 
