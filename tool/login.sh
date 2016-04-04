@@ -1,4 +1,8 @@
 #!/bin/bash
 
-curl -i -H "Content-Type: application/json" -X GET -u $1 http://localhost/src/orga_server/src/public/api/v1/system/user/login
+source ./init.sh
+url="$URL/system/user/login"
+curl -i -H "$CONT" -X GET -u $1 $url
+
+echo "Copy auth field to $TOKEN (export TOKEN=12345)"
 
