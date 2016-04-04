@@ -70,10 +70,7 @@ function injectRoutes($app)
         $this->logger->addInfo("Logoff user");
         $mapper = new UserMapper($this->db, $this->logger);
         $data = $this->auth->logoutCurrentUser($mapper);
-        $response = $response->withHeader("WWW-Authenticate", 'Basic realm="'.Constants::ORGA_SERVER_REALM.'"');
-
-        $response->getBody()->write("Logged off");
-        $response = $response->withStatus(401);
+        $response = $response->withStatus(204);
         return $response;
     });
 
