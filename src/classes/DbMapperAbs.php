@@ -19,11 +19,11 @@ abstract class DbMapperAbs
                 {
                     $d = $this->toPublicData($d);
                 }
-                return array($this->name_multi => $data);
+                return $data;
             }
             else
             {
-                return array($this->name_multi => $data);
+                return array();
             }
         }
         catch (PDOException $ex)
@@ -42,7 +42,7 @@ abstract class DbMapperAbs
             $data = $result->fetch(PDO::FETCH_ASSOC);
             if ($data)
             {
-                return array($this->name_single => $this->toPublicData($data));
+                return $this->toPublicData($data);
             }
             else
             {
