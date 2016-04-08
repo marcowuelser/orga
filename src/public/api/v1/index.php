@@ -6,11 +6,14 @@ set_include_path(get_include_path() . PATH_SEPARATOR . '../../../');
 
 // Perform autoload of slim classes
 require_once('vendor/autoload.php');
+
+// Project
 require_once('../../../config.php');
-require_once('../../../version.php');
+require_once('version.php');
 include_once('util/util.php');
 
-include_once('routes.php');
+// Local
+include_once('./routes.php');
 
 mb_language("uni");
 mb_regex_encoding('UTF-8');
@@ -24,7 +27,7 @@ setlocale (LC_ALL, 'de_CH.utf8');
 // Autoload classes
 spl_autoload_register(function ($classname)
 {
-    require ("../../../classes/" . $classname . ".php");
+    require ("classes/" . $classname . ".php");
 });
 
 $config = getConfig();
