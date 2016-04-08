@@ -1,6 +1,7 @@
 {
     "require": {
         "slim/slim": "^3.3",
-        "monolog/monolog": "^1.18"
+        "monolog/monolog": "^1.18",
+        "palanik/corsslim": "dev-slim3"
     }
 }
