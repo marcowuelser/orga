@@ -6,20 +6,23 @@ include_once('version.php');
 include_once('enum.php');
 include_once('util/error.php');
 
-function injectRoutes($app)
+function injectRoutes($app, $config)
 {
     $container = $app->getContainer();
+
+    // Enable token authorization for all routes except for ../user/login.
+    $authOn = $config["authenticationOn"];
 
     // Authorization
     $requireAdmin = new UserAuthorizationMiddleware(
         $container->get('auth'),
         Match::EqualOrBetter,
-        UserRole::RoleAdmin);
+        $authOn ? UserRole::RoleAdmin : UserRole::RoleGuest);
 
     $requireAuthor = new UserAuthorizationMiddleware(
         $container->get('auth'),
         Match::EqualOrBetter,
-        UserRole::RoleAuthor);
+        $authOn ? UserRole::RoleAuthor : UserRole::RoleGuest);
 
     // Setup routes
 

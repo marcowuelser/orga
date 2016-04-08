@@ -85,7 +85,7 @@ if ($config["authenticationOn"])
     $app->add($tokenAuth);
 }
 
-injectRoutes($app);
+injectRoutes($app, $config);
 
 // CORS
 $corsOptions = array(
