@@ -4,6 +4,38 @@ require_once("util/error.php");
 
 abstract class DbMapperAbs
 {
+    public function select($where, $order, $limit, $removeFields = array())
+    {
+        $this->logger->addInfo("Get $this->name_multi");
+
+        try
+        {
+            $sql = $this->createSqlSelect($this->table, $where, $order, $limit);
+            $stmt = $this->db->prepare($sql);
+            $this->bindWhereFields($stmt, $where);
+            $stmt->execute();
+
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if ($data)
+            {
+                foreach($data as &$d)
+                {
+                    $this->removeFields($d, $removeFields);
+                    $d = $this->toPublicData($d);
+                }
+                return $data;
+            }
+            else
+            {
+                return array();
+            }
+        }
+        catch (PDOException $ex)
+        {
+            return createErrorResponse(2001, $ex->getMessage());
+        }
+    }
+
     public function selectAll()
     {
         $this->logger->addInfo("Get all $this->name_multi");
@@ -334,6 +366,86 @@ abstract class DbMapperAbs
         return $sql;
     }
 
+    private function createSqlSelect($table, $where = null, $order = null, $limit = 100, $offset = null)
+    {
+        //print_r2($where);
+        //print_r2($order);
+        $sql = "SELECT * FROM `$table`";
+        $sql .= $this->createSqlWhereClause($where);
+        $sql .= $this->createSqlOrderClause($order);
+        $sql .= $this->createSqlLimitClause($limit, $offset);
+        return $sql;
+    }
+
+    private function createSqlWhereClause($fields)
+    {
+        if ($fields == null)
+        {
+            return " WHERE 1=1";
+        }
+
+        $sql = " WHERE ";
+        $notFirst = false;
+        foreach ($fields as $field => $value)
+        {
+            if ($notFirst)
+            {
+                $sql .= " AND ";
+            }
+            $notFirst = true;
+
+            $sql .= " `".$field."` = ";
+            $sql .= " :whereField_".$field;
+        }        
+        return $sql;
+    }
+
+    private function createSqlOrderClause($fields)
+    {
+        if ($fields == null)
+        {
+            return "";
+        }
+
+        $sql = " ORDER BY ";
+        $notFirst = false;
+        foreach ($fields as $field => $ascending)
+        {
+            if ($notFirst)
+            {
+                $sql .= ",";
+            }
+            $notFirst = true;
+
+            $sql .= " `".$field."` ";
+            if ($ascending)
+            {
+                $sql .= " ASC";
+            }
+            else
+            {
+                $sql .= " DESC";
+            }
+        }
+        return $sql;
+    }
+
+    private function createSqlLimitClause($limit, $offset)
+    {
+        if ($limit == null)
+        {
+            return "";
+        }
+        $sql = " LIMIT $limit";
+
+        if ($offset == null)
+        {
+            return $sql;
+        }
+        $sql = " OFFSET $offset";
+        return $sql;
+    }
+
     private function createSqlDelete($table)
     {
         $sql = "DELETE FROM `$table` WHERE `id` = :field_key LIMIT 1;";
@@ -345,6 +457,25 @@ abstract class DbMapperAbs
         foreach ($fields as $field => $value)
         {
             $stmt->bindValue(":field_$field", $value);
+        }
+    }
+
+    private function bindWhereFields(&$stmt, $fields)
+    {
+        foreach ($fields as $field => $value)
+        {
+            $stmt->bindValue(":whereField_$field", $value);
+        }
+    }
+
+    private function removeFields(&$d, $fields)
+    {
+        foreach ($fields as $field)
+        {
+            if (isset($d[$field]))
+            {
+                unset($d[$field]);
+            }
         }
     }
 
