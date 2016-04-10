@@ -47,8 +47,11 @@ class Authorization
             return false;
         }
 
-        $response = $mapper->selectByToken($username, $token);
-        if (isErrorResponse($response))
+        try
+        {
+            $response = $mapper->selectByToken($username, $token);
+        }
+        catch (Exception $ex)
         {
             return false;
         }
@@ -59,10 +62,6 @@ class Authorization
     public function loginUser($username, $password, $mapper)
     {
         $response = $mapper->selectByCredentials($username, $password);
-        if (isErrorResponse($response))
-        {
-            return $response;
-        }
         $id = $response['id'];
         $username = $response['username'];
         $token = $this->generateNewToken();
@@ -74,7 +73,7 @@ class Authorization
                 "username" => $username,
                 "id" => $id);
         }
-        return createErrorResponse(3001, "Invalid Credentials");
+        throw new Exception("Invalid Credentials", 3001);
     }
 
     public function logoutCurrentUser($mapper)
@@ -110,10 +109,6 @@ class Authorization
         $id = $this->getCurrentUserId();
 
         $user = $mapper->selectByCredentials($this->getCurrentUsername(), $passwordOld);
-        if (isErrorResponse($user))
-        {
-            return $user;
-        }
         return $mapper->setPassword($id, $data);
     }
 

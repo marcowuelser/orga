@@ -26,12 +26,12 @@ class UserMapper extends DbMapperAbs
             }
             else
             {
-                return createErrorResponse(1001, "User with name $name not found");
+                throw new Exception("User with name $name not found", 1001);
             }
         }
         catch (PDOException $ex)
         {
-            return createErrorResponse(2001, $ex);
+            throw new Exception($ex->getMessage(), 2001);
         }
     }
 
@@ -43,18 +43,18 @@ class UserMapper extends DbMapperAbs
             $stmt = $this->db->prepare($sql);
             if (!$stmt->execute())
             {
-                return createErrorResponse(3001, "Invalid credentials");
+                throw new Exception("Invalid credentials", 3001);
             }
             if ($stmt->rowCount() < 1)
             {
-                return createErrorResponse(3001, "Invalid credentials");
+                throw new Exception("Invalid credentials", 3001);
             }
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
             return $this->toPublicData($data);
         }
         catch (PDOException $ex)
         {
-            return createErrorResponse(2001, $ex);
+            throw new Exception($ex->getMessage(), 2001);
         }
     }
 
@@ -66,18 +66,18 @@ class UserMapper extends DbMapperAbs
             $stmt = $this->db->prepare($sql);
             if (!$stmt->execute())
             {
-                return createErrorResponse(1001, "Invalid token");
+                throw new Exception("Invalid token", 1001);
             }
             if ($stmt->rowCount() < 1)
             {
-                return createErrorResponse(1001, "Invalid token");
+                throw new Exception("Invalid token", 1001);
             }
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
             return $this->toPublicData($data);
         }
         catch (PDOException $ex)
         {
-            return createErrorResponse(2001, $ex);
+            throw new Exception($ex->getMessage(), 2001);
         }
     }
 
@@ -97,7 +97,7 @@ class UserMapper extends DbMapperAbs
         }
         catch (PDOException $ex)
         {
-            return false;
+            throw new Exception($ex->getMessage(), 2001);
         }
     }
 
@@ -112,7 +112,7 @@ class UserMapper extends DbMapperAbs
         }
         catch (PDOException $ex)
         {
-            return false;
+            throw new Exception($ex->getMessage(), 2001);
         }
     }
 
@@ -128,7 +128,7 @@ class UserMapper extends DbMapperAbs
             $stmt->bindValue(":field_id", $id, PDO::PARAM_INT);
             if (!$stmt->execute())
             {
-                return createErrorResponse(2001, "Could not set password for user id $id");
+                throw new Exception("Could not set password for user id $id", 2001);
             }
             else
             {
@@ -137,8 +137,7 @@ class UserMapper extends DbMapperAbs
         }
         catch (PDOException $ex)
         {
-            echo $ex;
-            return createErrorResponse(2001, $ex);
+            throw new Exception($ex->getMessage(), 2001);
         }
     }
 

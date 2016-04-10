@@ -32,7 +32,7 @@ abstract class DbMapperAbs
         }
         catch (PDOException $ex)
         {
-            return createErrorResponse(2001, $ex->getMessage());
+            throw new Exception($ex->getMessage(), 2001);
         }
     }
 
@@ -60,7 +60,7 @@ abstract class DbMapperAbs
         }
         catch (PDOException $ex)
         {
-            return createErrorResponse(2001, $ex->getMessage());
+            throw new Exception($ex->getMessage(), 2001);
         }
     }
 
@@ -78,12 +78,12 @@ abstract class DbMapperAbs
             }
             else
             {
-                return createErrorResponse(1001, "Task with id $id not found");
+                throw new Exception("Task with id $id not found", 1001);
             }
         }
         catch (PDOException $ex)
         {
-            return createErrorResponse(2001, $ex->getMessage());
+            throw new Exception($ex->getMessage(), 2001);
         }
     }
 
@@ -107,11 +107,7 @@ abstract class DbMapperAbs
         }
         catch (PDOException $ex)
         {
-            return createErrorResponse(2001, $ex->getMessage());
-        }
-        catch (Exception $ex)
-        {
-            return createErrorResponse(1003, $ex->getMessage());
+            throw new Exception($ex->getMessage(), 2001);
         }
     }
 
@@ -136,11 +132,7 @@ abstract class DbMapperAbs
         }
         catch (PDOException $ex)
         {
-            return createErrorResponse(2001, $ex->getMessage());
-        }
-        catch (Exception $ex)
-        {
-            return createErrorResponse(1003, $ex->getMessage());
+            throw new Exception($ex->getMessage(), 2001);
         }
     }
 
@@ -158,7 +150,7 @@ abstract class DbMapperAbs
             $fields = $this->onPatch($data);
             if (empty($fields))
             {
-                throw new Exception("No fields in patch request");
+                throw new Exception("No fields in patch request", 1003);
             }
             $sql = $this->createSqlUpdate($this->table, $fields);
             $stmt = $this->db->prepare($sql);
@@ -169,11 +161,7 @@ abstract class DbMapperAbs
         }
         catch (PDOException $ex)
         {
-            return createErrorResponse(2001, $ex->getMessage());
-        }
-        catch (Exception $ex)
-        {
-            return createErrorResponse(1003, $ex->getMessage());
+            throw new Exception($ex->getMessage(), 2001);
         }
     }
 
@@ -184,10 +172,6 @@ abstract class DbMapperAbs
         try
         {
             $entry = $this->selectById($id);
-            if (isErrorResponse($entry))
-            {
-                return $entry;
-            }
             $sql = $this->createSqlDelete($this->table);
 
             $stmt = $this->db->prepare($sql);
@@ -197,11 +181,7 @@ abstract class DbMapperAbs
         }
         catch (PDOException $ex)
         {
-            return createErrorResponse(2001, $ex->getMessage());
-        }
-        catch (Exception $ex)
-        {
-            return createErrorResponse(1003, $ex->getMessage());
+            throw new Exception($ex->getMessage(), 2001);
         }
     }
 
@@ -211,14 +191,14 @@ abstract class DbMapperAbs
     {
         if (!array_key_exists($field, $data))
         {
-            throw new Exception("Field $field is missing");
+            throw new Exception("Field $field is missing", 1003);
             return;
         }
         $value = filter_var($data[$field], FILTER_SANITIZE_STRING);
 
         if (!is_string($value))
         {
-            throw new Exception("Field $field is no string");
+            throw new Exception("Field $field is no string", 1003);
             return;
         }
 
@@ -229,13 +209,13 @@ abstract class DbMapperAbs
     {
         if (!array_key_exists($field, $data))
         {
-            throw new Exception("Field $field is missing");
+            throw new Exception("Field $field is missing", 1003);
             return;
         }
         $value = $data[$field];
         if (!is_int($value) && !is_bool($value))
         {
-            throw new Exception("Field $field is no bool");
+            throw new Exception("Field $field is no bool", 1003);
             return;
         }
         $value = $value ? 1 : 0;
@@ -247,13 +227,13 @@ abstract class DbMapperAbs
     {
         if (!array_key_exists($field, $data))
         {
-            throw new Exception("Field $field is missing");
+            throw new Exception("Field $field is missing", 1003);
             return;
         }
         $value = $data[$field];
         if (!is_int($value))
         {
-            throw new Exception("Field $field is no int");
+            throw new Exception("Field $field is no int", 1003);
             return;
         }
 
