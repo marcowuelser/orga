@@ -25,15 +25,15 @@ class RulesetMapper extends DbMapperAbs
         $this->requireString("caption", $data, $fields);
         $this->requireString("description", $data, $fields);
         $this->optionalBool("active", $data, $fields);
-        $this->optionalInt("defaultOrder", $data, $fields);
+        $this->optionalInt("default_order", $data, $fields);
 
         // system fields
         $now = date('Y-m-d H:i:s');
         $fields['created'] = $now;
         $fields['updated'] = $now;
-        if (!isset($fields['defaultOrder']))
+        if (!isset($fields['default_order']))
         {
-            $fields['defaultOrder'] = 0;
+            $fields['default_order'] = 0;
         }
         if (!isset($fields['active']))
         {
@@ -52,7 +52,7 @@ class RulesetMapper extends DbMapperAbs
         $this->requireString("caption", $data, $fields);
         $this->requireString("description", $data, $fields);
         $this->requireBool("active", $data, $fields);
-        $this->requireInt("defaultOrder", $data, $fields);
+        $this->requireInt("default_order", $data, $fields);
 
         // system fields
         $now = date('Y-m-d H:i:s');
@@ -69,7 +69,7 @@ class RulesetMapper extends DbMapperAbs
         $this->optionalString("caption", $data, $fields);
         $this->optionalString("description", $data, $fields);
         $this->optionalBool("active", $data, $fields);
-        $this->optionalInt("defaultOrder", $data, $fields);
+        $this->optionalInt("default_order", $data, $fields);
         if (empty($fields))
         {
             throw new Exception("No fields in patch request");
@@ -88,7 +88,7 @@ class RulesetMapper extends DbMapperAbs
         $data['id'] = intval ($data['id']);
         $data["uri"] = $this->getEntryURI($id);
         $data['active'] = intval ($data["active"]) != 0;
-        $data['defaultOrder'] = intval ($data["defaultOrder"]);
+        $data['default_order'] = intval ($data["default_order"]);
         return $data;
     }
 }

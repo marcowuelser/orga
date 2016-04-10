@@ -151,14 +151,14 @@ class UserMapper extends DbMapperAbs
         // user fields
         $this->requireString("name", $data, $fields);
         $this->requireString("username", $data, $fields);
-        $this->requireInt("role_id", $data, $fields);
-        $this->optionalBool("defaultOrder", $data, $fields);
+        $this->requireInt("role_flags", $data, $fields);
+        $this->optionalBool("default_order", $data, $fields);
         $this->optionalInt("active", $data, $fields);
 
         // system fields
-        if (!isset($fields['defaultOrder']))
+        if (!isset($fields['default_order']))
         {
-            $fields['defaultOrder'] = 0;
+            $fields['default_order'] = 0;
         }
         if (!isset($fields['active']))
         {
@@ -175,7 +175,7 @@ class UserMapper extends DbMapperAbs
         $this->requireString("name", $data, $fields);
         $this->requireString("username", $data, $fields);
         $this->requireInt("role_flags", $data, $fields);
-        $this->requireInt("defaultOrder", $data, $fields);
+        $this->requireInt("default_order", $data, $fields);
         $this->requireBool("active", $data, $fields);
 
         return $fields;
@@ -189,7 +189,7 @@ class UserMapper extends DbMapperAbs
         $this->optionalString("name", $data, $fields);
         $this->optionalString("username", $data, $fields);
         $this->optionalInt("role_flags", $data, $fields);
-        $this->optionalInt("defaultOrder", $data, $fields);
+        $this->optionalInt("default_order", $data, $fields);
         $this->optionalBool("active", $data, $fields);
         if (empty($fields))
         {
@@ -208,7 +208,7 @@ class UserMapper extends DbMapperAbs
             "name" => $data["name"],
             "role_flags" => intval ($data["role_flags"]),
             "role" => UserRoleFlag::toString($data["role_flags"]),
-            "defaultOrder" => intval ($data["defaultOrder"]),
+            "default_order" => intval ($data["default_order"]),
             "active" => intval ($data["active"]) != 0,
             "uri" => $this->getEntryURI($id));
     }
