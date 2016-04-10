@@ -396,7 +396,7 @@ abstract class DbMapperAbs
 
             $sql .= " `".$field."` = ";
             $sql .= " :whereField_".$field;
-        }        
+        }
         return $sql;
     }
 
