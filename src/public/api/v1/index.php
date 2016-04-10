@@ -41,6 +41,17 @@ $app = new \Slim\App(
 // Create containers
 $container = $app->getContainer();
 
+// Error handler
+
+$container['errorHandler'] = function ($c) {
+    return function ($request, $response, $exception) use ($c) {
+        return responseWithJsonError(
+            $response,
+            $exception->getCode(),
+            $exception->getMessage());
+    };
+};
+
 // Logger
 $container['logger'] = function($c)
 {
@@ -93,8 +104,17 @@ injectRoutes($app, $config);
 // CORS
 $corsOptions = array(
     "origin" => "*",
-    "exposeHeaders" => array("Content-Type", "X-Requested-With", "X-authentication", "X-client"),
-    "allowMethods" => array('GET', 'POST', 'PUT', 'DELETE', 'OPTIONS')
+    "exposeHeaders" => array(
+        "Content-Type",
+        "X-Requested-With",
+        "X-authentication",
+        "X-client"),
+    "allowMethods" => array(
+        'GET',
+        'POST',
+        'PUT',
+        'DELETE',
+        'OPTIONS')
 );
 $cors = new \CorsSlim\CorsSlim($corsOptions);
 $app->add($cors);
