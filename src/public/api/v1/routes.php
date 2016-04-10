@@ -3,7 +3,6 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 include_once('version.php');
-include_once('enum.php');
 include_once('util/error.php');
 
 function injectRoutes($app, $config)
@@ -16,13 +15,11 @@ function injectRoutes($app, $config)
     // Authorization
     $requireAdmin = new UserAuthorizationMiddleware(
         $container->get('auth'),
-        Match::EqualOrBetter,
-        $authOn ? UserRole::RoleAdmin : UserRole::RoleGuest);
+        $authOn ? UserRoleFlag::RoleAdmin : UserRoleFlag::RoleGuest);
 
     $requireAuthor = new UserAuthorizationMiddleware(
         $container->get('auth'),
-        Match::EqualOrBetter,
-        $authOn ? UserRole::RoleAuthor : UserRole::RoleGuest);
+        $authOn ? UserRoleFlag::RoleAuthor : UserRoleFlag::RoleGuest);
 
     // Setup routes
 
@@ -148,7 +145,7 @@ function injectRoutes($app, $config)
 
     $app->get('/system/users/roles', function (Request $request, Response $response)
     {
-        return responseWithJson($response, UserRole::toAssocArray());
+        return responseWithJson($response, UserRoleFlag::toAssocArray());
     });
 
     // Ruleset Management

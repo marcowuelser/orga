@@ -34,22 +34,10 @@ class Authorization
         return $this->currentUser['username'];
     }
 
-    public function isRoleEqualOrHigher($role)
+    public function isCurrentUserInRole($role)
     {
-        return $this->currentUser['role_id'] >= $role;
-    }
-
-    public function isRoleInSelection($roles)
-    {
-        $currentRole = $this->currentUser['role_id'];
-        foreach ($roles as $role)
-        {
-            if ($currentRole == $role)
-            {
-                return true;
-            }
-        }
-        return $false;
+        $flag = new UserRoleFlag();
+        return $flag->checkFlag($this->currentUser['role_flags'], $role);
     }
 
     public function validateToken($username, $token, $mapper)

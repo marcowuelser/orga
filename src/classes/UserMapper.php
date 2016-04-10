@@ -1,7 +1,6 @@
 <?php
 
 require_once("classes/DbMapperAbs.php");
-include_once("enum.php");
 
 class UserMapper extends DbMapperAbs
 {
@@ -175,7 +174,7 @@ class UserMapper extends DbMapperAbs
         // user fields
         $this->requireString("name", $data, $fields);
         $this->requireString("username", $data, $fields);
-        $this->requireInt("role_id", $data, $fields);
+        $this->requireInt("role_flags", $data, $fields);
         $this->requireInt("defaultOrder", $data, $fields);
         $this->requireBool("active", $data, $fields);
 
@@ -189,7 +188,7 @@ class UserMapper extends DbMapperAbs
         // user fields
         $this->optionalString("name", $data, $fields);
         $this->optionalString("username", $data, $fields);
-        $this->optionalInt("role_id", $data, $fields);
+        $this->optionalInt("role_flags", $data, $fields);
         $this->optionalInt("defaultOrder", $data, $fields);
         $this->optionalBool("active", $data, $fields);
         if (empty($fields))
@@ -207,8 +206,8 @@ class UserMapper extends DbMapperAbs
             "id" => intval ($id),
             "username" => $data["username"],
             "name" => $data["name"],
-            "role_id" => intval ($data["role_id"]),
-            "role" => UserRole::toString($data["role_id"]),
+            "role_flags" => intval ($data["role_flags"]),
+            "role" => UserRoleFlag::toString($data["role_flags"]),
             "defaultOrder" => intval ($data["defaultOrder"]),
             "active" => intval ($data["active"]) != 0,
             "uri" => $this->getEntryURI($id));

@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS `s_user` (
   `username` VARCHAR(45) NOT NULL,
   `password` VARCHAR(255) NOT NULL,
   `name` VARCHAR(45) NOT NULL,
-  `role_id` INT NOT NULL,
+  `role_flags` INT NOT NULL,
   `defaultOrder` INT NOT NULL,
   `active` BOOLEAN NOT NULL,
   `token` VARCHAR(255) NULL,
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `s_user` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `username_UNIQUE` (`username` ASC))
 ENGINE = InnoDB DEFAULT CHARSET=utf8;
-INSERT INTO s_user (username, password, role_id, defaultOrder, active) VALUES('root', PASSWORD('password'), 3, 0, 1);
+INSERT INTO s_user (username, password, role_flags, defaultOrder, active) VALUES('root', PASSWORD('password'), 3, 0, 1);
 
 # Ruleset
 
