@@ -18,7 +18,7 @@ class ScopeEnumTest extends PHPUnit_Framework_TestCase
         // Assert
         $this->assertEquals(1, ScopeEnum::ScopeUser);
         $this->assertEquals(2, ScopeEnum::ScopePlayer);
-        $this->assertEquals(3, ScopeEnum::ScopeCharacter);
+        $this->assertEquals(4, ScopeEnum::ScopeCharacter);
     }
 
     public function testToString()
@@ -38,14 +38,15 @@ class ScopeEnumTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("Player", $sut::toString("2"));
 
         $this->assertEquals("Character", $sut::toString(ScopeEnum::ScopeCharacter));
-        $this->assertEquals("Character", $sut::toString(3));
-        $this->assertEquals("Character", $sut::toString("3"));
+        $this->assertEquals("Character", $sut::toString(4));
+        $this->assertEquals("Character", $sut::toString("4"));
 
         $this->assertEquals("Unknown", $sut::toString(""));
         $this->assertEquals("Unknown", $sut::toString(null));
         $this->assertEquals("Unknown", $sut::toString(-1));
         $this->assertEquals("Unknown", $sut::toString(0));
-        $this->assertEquals("Unknown", $sut::toString(4));
+        $this->assertEquals("Unknown", $sut::toString(3));
+        $this->assertEquals("Unknown", $sut::toString(5));
         $this->assertEquals("Unknown", $sut::toString(42));
         $this->assertEquals("Unknown", $sut::toString($sut));
     }

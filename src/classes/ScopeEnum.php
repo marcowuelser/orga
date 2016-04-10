@@ -4,7 +4,7 @@ class ScopeEnum
 {
     const ScopeUser = 1;
     const ScopePlayer = 2;
-    const ScopeCharacter = 3;
+    const ScopeCharacter = 4;
 
     public static function toString($value)
     {
