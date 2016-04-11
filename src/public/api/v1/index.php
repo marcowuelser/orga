@@ -34,6 +34,7 @@ spl_autoload_register(function ($classname)
 });
 
 $config = getConfig();
+DbMapperAbs::setBaseURI($config["baseURI"]);
 
 // Create App
 $app = new \Slim\App(

@@ -5,6 +5,11 @@ require_once("util/error.php");
 
 abstract class DbMapperAbs
 {
+    public function setBaseURI(string $uri)
+    {
+        self::$baseUri = $uri;
+    }
+
     public function select(array $where, array $order, int $limit, array $removeFields = array()) : array
     {
         $this->logger->addInfo("Get $this->name_multi");
@@ -285,7 +290,9 @@ abstract class DbMapperAbs
 
     protected function getEntryURI(int $id) : string
     {
-       return $this->uriBase . $this->uriSingle . '/' . $id;
+        $protocol = $_SERVER['REQUEST_SCHEME'];
+        $server = $_SERVER['SERVER_NAME'];
+        return  self::$baseUri . $this->uriSingle . '/' . $id;
     }
 
     abstract protected function onInsert(array $data) : array;
@@ -454,11 +461,13 @@ abstract class DbMapperAbs
         }
     }
 
+    private static $baseUri;
+
     protected $db = null;
     protected $logger = null;
     protected $table = '';
     protected $name_single = '';
     protected $name_multi = '';
-    protected $uriBase = "http://localhost/src/orga_server/src/public/api/v1/";
+    protected $uriBase = '';
     protected $uriSingle = '';
 }
