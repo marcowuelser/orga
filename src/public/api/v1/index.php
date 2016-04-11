@@ -16,6 +16,7 @@ include_once('util/util.php');
 
 // Local
 include_once('./routes.php');
+include_once('./routesMessage.php');
 
 mb_language("uni");
 mb_regex_encoding('UTF-8');
@@ -108,7 +109,8 @@ if ($config["authenticationOn"])
     $app->add($tokenAuth);
 }
 
-injectRoutes($app, $config);
+injectRoutesSystem($app, $config);
+injectRoutesMessage($app, $config);
 
 // CORS
 $corsOptions = array(

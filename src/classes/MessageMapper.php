@@ -90,11 +90,46 @@ class MessageMapper extends DbMapperAbs
     protected function toPublicData(array $data) : array
     {
         $id = intval($data["id"]);
+        $scope = intval($data["scope_id"]);
+        $creatorId = intval($data["creator_id"]);
+        $destinationId = intval($data["destination_id"]);
 
         $data['id'] = $id;
         $data["uri"] = $this->getEntryURI($id);
         $data['active'] = intval ($data["active"]) != 0;
         $data['default_order'] = intval ($data["default_order"]);
+
+        if ($scope == ScopeEnum::ScopeUser)
+        {
+            $userMapper = new UserMapper($this->db, $this->logger);
+            $creator = $userMapper->selectById($creatorId);
+            $destination = $userMapper->selectById($destinationId);
+            $data['creator'] = $creator["name"];
+            $data['destination'] = $destination["name"];
+        }
+        if ($scope == ScopeEnum::ScopePlayer)
+        {
+            $playerMapper = new PlayerMapper($this->db, $this->logger);
+            $creator = $playerMapper->selectById($creatorId);
+            $destination = $playerMapper->selectById($destinationId);
+
+            $userMapper = new UserMapper($this->db, $this->logger);
+            $creatorId = intval($creator["user_id"]);
+            $destinationId = intval($destination["user_id"]);
+            $creator = $userMapper->selectById($creatorId);
+            $destination = $userMapper->selectById($destinationId);
+
+            $data['creator'] = $creator["name"];
+            $data['destination'] = $destination["name"];
+        }
+        if ($scope == ScopeEnum::ScopeCharacter)
+        {
+            $characterMapper = new CharacterMapper($this->db, $this->logger);
+            $creator = $characterMapper->selectById($creatorId);
+            $destination = $characterMapper->selectById($destinationId);
+            $data['creator'] = $creator["name_short"];
+            $data['destination'] = $destination["name_short"];
+        }
         return $data;
     }
 }
