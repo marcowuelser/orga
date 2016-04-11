@@ -1,10 +1,12 @@
 <?php
 
+use \Monolog\Logger as Logger;
+
 require_once("classes/DbMapperAbs.php");
 
 class SystemMapper extends DbMapperAbs
 {
-    public function __construct($db, $logger)
+    public function __construct(PDO $db, Logger $logger)
     {
         $this->db = $db;
         $this->logger = $logger;
@@ -15,26 +17,26 @@ class SystemMapper extends DbMapperAbs
 
     // Query helpers
 
-    protected function onInsert($data)
+    protected function onInsert(array $data) : array
     {
         return array();
     }
 
-    protected function onUpdate($data)
+    protected function onUpdate(array $data) : array
     {
         $fields = array();
         $this->requireBool("maintenance", $data, $fields);
         return $fields;
     }
 
-    protected function onPatch($data)
+    protected function onPatch(array $data) : array
     {
         $fields = array();
         $this->optionalBool("maintenance", $data, $fields);
         return $fields;
     }
 
-    protected function toPublicData($data)
+    protected function toPublicData(array $data) : array
     {
         unset($data['id']);
         $data['maintenance'] = $data['maintenance'] == 0 ? false : true;

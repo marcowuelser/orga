@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 class Authorization
 {
@@ -6,17 +7,17 @@ class Authorization
     {
     }
 
-    public function setCurrentUser($currentUser)
+    public function setCurrentUser(array $currentUser)
     {
         $this->currentUser = $currentUser;
     }
 
-    public function isCurrentUser()
+    public function isCurrentUser() : bool
     {
         return $this->currentUser != null;
     }
 
-    public function getCurrentUserId()
+    public function getCurrentUserId() : int
     {
         if (!$this->isCurrentUser())
         {
@@ -25,7 +26,7 @@ class Authorization
         return $this->currentUser['id'];
     }
 
-    public function getCurrentUsername()
+    public function getCurrentUsername() : string
     {
         if (!$this->isCurrentUser())
         {
@@ -34,13 +35,13 @@ class Authorization
         return $this->currentUser['username'];
     }
 
-    public function isCurrentUserInRole($role)
+    public function isCurrentUserInRole(int $role) : bool
     {
         $flag = new UserRoleFlag();
         return $flag->checkFlag($this->currentUser['role_flags'], $role);
     }
 
-    public function validateToken($username, $token, $mapper)
+    public function validateToken(string $username, string $token, UserMapper $mapper) : bool
     {
         if (!$username || !$token)
         {
@@ -59,7 +60,7 @@ class Authorization
         return true;
     }
 
-    public function loginUser($username, $password, $mapper)
+    public function loginUser(string $username, string $password, UserMapper $mapper) : array
     {
         $response = $mapper->selectByCredentials($username, $password);
         $id = $response['id'];
@@ -76,14 +77,13 @@ class Authorization
         throw new Exception("Invalid Credentials", 3001);
     }
 
-    public function logoutCurrentUser($mapper)
+    public function logoutCurrentUser(UserMapper $mapper)
     {
         $id = $this->getCurrentUserId();
         $mapper->clearToken($id);
-        return;
     }
 
-    public function patchCurrentUser($data, $mapper)
+    public function patchCurrentUser(array $data, UserMapper $mapper) : array
     {
         $id = $this->getCurrentUserId();
         $filtered = array();
@@ -98,7 +98,7 @@ class Authorization
         return $mapper->patch($id, $filtered);
     }
 
-    public function changeCurrentUserPassword($data, $mapper)
+    public function changeCurrentUserPassword(array $data, UserMapper $mapper) : array
     {
         $passwordOld = '';
         $passwordNew = '';
@@ -114,7 +114,7 @@ class Authorization
 
     // static util
 
-    public static function parseCredentials($request, &$username, &$password)
+    public static function parseCredentials(array $request, string &$username, string &$password) : bool
     {
         $username = false;
         $password = false;
@@ -141,7 +141,7 @@ class Authorization
 
     // Helper
 
-    private function generateNewToken()
+    private function generateNewToken() : string
     {
         return bin2hex(openssl_random_pseudo_bytes(16));
     }

@@ -1,10 +1,12 @@
 <?php
 
+use \Monolog\Logger as Logger;
+
 require_once("classes/DbMapperAbs.php");
 
 class MessageMapper extends DbMapperAbs
 {
-    public function __construct($db, $logger)
+    public function __construct(PDO $db, Logger $logger)
     {
         $this->db = $db;
         $this->logger = $logger;
@@ -16,7 +18,7 @@ class MessageMapper extends DbMapperAbs
 
     // Query helpers
 
-    protected function onInsert($data)
+    protected function onInsert(array $data) : array
     {
         $fields = array();
 
@@ -38,7 +40,7 @@ class MessageMapper extends DbMapperAbs
         return $fields;
     }
 
-    protected function onUpdate($data)
+    protected function onUpdate(array $data) : array
     {
         $fields = array();
 
@@ -58,7 +60,7 @@ class MessageMapper extends DbMapperAbs
         return $fields;
     }
 
-    protected function onPatch($data)
+    protected function onPatch(array $data) : array
     {
         $fields = array();
 
@@ -84,7 +86,7 @@ class MessageMapper extends DbMapperAbs
         return $fields;
     }
 
-    protected function toPublicData($data)
+    protected function toPublicData(array $data) : array
     {
         $id = $data["id"];
         $data['id'] = intval($data['id']);

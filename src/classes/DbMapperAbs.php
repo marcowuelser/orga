@@ -4,7 +4,7 @@ require_once("util/error.php");
 
 abstract class DbMapperAbs
 {
-    public function select($where, $order, $limit, $removeFields = array())
+    public function select(array $where, array $order, int $limit, array $removeFields = array()) : array
     {
         $this->logger->addInfo("Get $this->name_multi");
 
@@ -36,7 +36,7 @@ abstract class DbMapperAbs
         }
     }
 
-    public function selectAll()
+    public function selectAll() : array
     {
         $this->logger->addInfo("Get all $this->name_multi");
 
@@ -64,7 +64,7 @@ abstract class DbMapperAbs
         }
     }
 
-    public function selectById($id)
+    public function selectById(int $id) : array
     {
         $this->logger->addInfo("Get $this->name_single with id $id");
 
@@ -87,7 +87,7 @@ abstract class DbMapperAbs
         }
     }
 
-    public function insert($data)
+    public function insert(array $data) : array
     {
         $this->logger->addInfo("Add new $this->name_single");
         if ($data == null)
@@ -111,7 +111,7 @@ abstract class DbMapperAbs
         }
     }
 
-    public function update($id, $data)
+    public function update(int $id, array $data) : array
     {
         if ($data == null)
         {
@@ -136,7 +136,7 @@ abstract class DbMapperAbs
         }
     }
 
-    public function patch($id, $data)
+    public function patch(int $id, array $data) : array
     {
         if ($data == null)
         {
@@ -165,7 +165,7 @@ abstract class DbMapperAbs
         }
     }
 
-    public function delete($id)
+    public function delete(int $id) : array
     {
         $this->logger->addInfo("Delete $this->name_single with id $id");
 
@@ -187,60 +187,54 @@ abstract class DbMapperAbs
 
     // Assertion helpers
 
-    protected function requireString($field, $data, &$fields)
+    protected function requireString(string $field, array $data, array &$fields)
     {
         if (!array_key_exists($field, $data))
         {
             throw new Exception("Field $field is missing", 1003);
-            return;
         }
         $value = filter_var($data[$field], FILTER_SANITIZE_STRING);
 
         if (!is_string($value))
         {
             throw new Exception("Field $field is no string", 1003);
-            return;
         }
 
         $fields[$field] = $value;
     }
 
-    protected function requireBool($field, $data, &$fields)
+    protected function requireBool(string $field, array $data, array &$fields)
     {
         if (!array_key_exists($field, $data))
         {
             throw new Exception("Field $field is missing", 1003);
-            return;
         }
         $value = $data[$field];
         if (!is_int($value) && !is_bool($value))
         {
             throw new Exception("Field $field is no bool", 1003);
-            return;
         }
         $value = $value ? 1 : 0;
 
         $fields[$field] = $value;
     }
 
-    protected function requireInt($field, $data, &$fields)
+    protected function requireInt(string $field, array $data, array &$fields)
     {
         if (!array_key_exists($field, $data))
         {
             throw new Exception("Field $field is missing", 1003);
-            return;
         }
         $value = $data[$field];
         if (!is_int($value))
         {
             throw new Exception("Field $field is no int", 1003);
-            return;
         }
 
         $fields[$field] = $value;
     }
 
-    protected function optionalString($field, $data, &$fields)
+    protected function optionalString(string $field, array $data, array &$fields)
     {
         if (!array_key_exists($field, $data))
         {
@@ -256,7 +250,7 @@ abstract class DbMapperAbs
         $fields[$field] = $value;
     }
 
-    protected function optionalBool($field, $data, &$fields)
+    protected function optionalBool(string $field, array $data, array &$fields)
     {
         if (!array_key_exists($field, $data))
         {
@@ -272,7 +266,7 @@ abstract class DbMapperAbs
         $fields[$field] = $value;
     }
 
-    protected function optionalInt($field, $data, &$fields)
+    protected function optionalInt(string $field, array $data, array &$fields)
     {
         if (!array_key_exists($field, $data))
         {
@@ -288,17 +282,17 @@ abstract class DbMapperAbs
         $fields[$field] = $value;
     }
 
-    protected function getEntryURI($id)
+    protected function getEntryURI(int $id) : string
     {
        return $this->uriBase . $this->uriSingle . '/' . $id;
     }
 
-    abstract protected function onInsert($data);
-    abstract protected function onUpdate($data);
-    abstract protected function onPatch($data);
-    abstract protected function toPublicData($data);
+    abstract protected function onInsert(array $data) : array;
+    abstract protected function onUpdate(array $data) : array;
+    abstract protected function onPatch(array $data) : array;
+    abstract protected function toPublicData(array $data) : array;
 
-    private function createSqlUpdate($table, $fields)
+    private function createSqlUpdate(string $table, array $fields) : string
     {
         $sql = "UPDATE $table SET";
         $notFirst = false;
@@ -316,7 +310,7 @@ abstract class DbMapperAbs
         return $sql;
     }
 
-    private function createSqlInsert($table, $fields)
+    private function createSqlInsert(string $table, array $fields) : string
     {
         $sql = "INSERT INTO `$table` (";
         $notFirst = false;
@@ -346,7 +340,7 @@ abstract class DbMapperAbs
         return $sql;
     }
 
-    private function createSqlSelect($table, $where = null, $order = null, $limit = 100, $offset = null)
+    private function createSqlSelect(string $table, array $where = array(), array $order = array(), int $limit = 100, int $offset = -1) : string
     {
         //print_r2($where);
         //print_r2($order);
@@ -357,9 +351,9 @@ abstract class DbMapperAbs
         return $sql;
     }
 
-    private function createSqlWhereClause($fields)
+    private function createSqlWhereClause($fields) : string
     {
-        if ($fields == null)
+        if (count($fields) == 0)
         {
             return " WHERE 1=1";
         }
@@ -380,9 +374,9 @@ abstract class DbMapperAbs
         return $sql;
     }
 
-    private function createSqlOrderClause($fields)
+    private function createSqlOrderClause(array $fields) : string
     {
-        if ($fields == null)
+        if (count($fields) == 0)
         {
             return "";
         }
@@ -410,15 +404,15 @@ abstract class DbMapperAbs
         return $sql;
     }
 
-    private function createSqlLimitClause($limit, $offset)
+    private function createSqlLimitClause(int $limit, int $offset) : string
     {
-        if ($limit == null)
+        if ($limit < 0)
         {
             return "";
         }
         $sql = " LIMIT $limit";
 
-        if ($offset == null)
+        if ($offset < 0)
         {
             return $sql;
         }
@@ -426,13 +420,13 @@ abstract class DbMapperAbs
         return $sql;
     }
 
-    private function createSqlDelete($table)
+    private function createSqlDelete(string $table) : string
     {
         $sql = "DELETE FROM `$table` WHERE `id` = :field_key LIMIT 1;";
         return $sql;
     }
 
-    private function bindFields(&$stmt, $fields)
+    private function bindFields(PDOStatement &$stmt, array $fields)
     {
         foreach ($fields as $field => $value)
         {
@@ -440,7 +434,7 @@ abstract class DbMapperAbs
         }
     }
 
-    private function bindWhereFields(&$stmt, $fields)
+    private function bindWhereFields(PDOStatement &$stmt, array $fields)
     {
         foreach ($fields as $field => $value)
         {
@@ -448,7 +442,7 @@ abstract class DbMapperAbs
         }
     }
 
-    private function removeFields(&$d, $fields)
+    private function removeFields(array &$d, array $fields)
     {
         foreach ($fields as $field)
         {

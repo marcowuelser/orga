@@ -1,5 +1,7 @@
 <?php
 
+use \Monolog\Logger as Logger;
+
 require_once("classes/DbMapperAbs.php");
 
 class UserMapper extends DbMapperAbs
@@ -14,7 +16,7 @@ class UserMapper extends DbMapperAbs
         $this->uriSingle = "system/user";
     }
 
-    public function selectByName($name)
+    public function selectByName(string $name) : array
     {
         try
         {
@@ -35,7 +37,7 @@ class UserMapper extends DbMapperAbs
         }
     }
 
-    public function selectByCredentials($username, $password)
+    public function selectByCredentials(string $username, string $password) : array
     {
         try
         {
@@ -58,7 +60,7 @@ class UserMapper extends DbMapperAbs
         }
     }
 
-    public function selectByToken($username, $token)
+    public function selectByToken(string $username, string $token) : array
     {
         try
         {
@@ -83,7 +85,7 @@ class UserMapper extends DbMapperAbs
 
     // Utility
 
-    public function setToken($id, $token)
+    public function setToken(int $id, string $token) : bool
     {
         $tokenExpiration = date('Y-m-d H:i:s', strtotime('+1 hour'));
 
@@ -101,7 +103,7 @@ class UserMapper extends DbMapperAbs
         }
     }
 
-    public function clearToken($id)
+    public function clearToken(int $id) : bool
     {
         $sql = "UPDATE s_user SET token=NULL, token_expire=NULL WHERE id=:field_id;";
         try
@@ -116,7 +118,7 @@ class UserMapper extends DbMapperAbs
         }
     }
 
-    public function setPassword($id, $data)
+    public function setPassword(int $id, array $data) : array
     {
         $sql = "UPDATE s_user SET password=PASSWORD(:field_password) WHERE id=:field_id;";
         try
@@ -143,7 +145,7 @@ class UserMapper extends DbMapperAbs
 
     // Query helpers
 
-    protected function onInsert($data)
+    protected function onInsert(array $data) : array
     {
         $fields = array();
 
@@ -166,7 +168,7 @@ class UserMapper extends DbMapperAbs
         return $fields;
     }
 
-    protected function onUpdate($data)
+    protected function onUpdate(array $data) : array
     {
         $fields = array();
 
@@ -180,7 +182,7 @@ class UserMapper extends DbMapperAbs
         return $fields;
     }
 
-    protected function onPatch($data)
+    protected function onPatch(array $data) : array
     {
         $fields = array();
 
@@ -198,7 +200,7 @@ class UserMapper extends DbMapperAbs
         return $fields;
     }
 
-    protected function toPublicData($data)
+    protected function toPublicData(array $data) : array
     {
         $id = $data["id"];
         return array(
