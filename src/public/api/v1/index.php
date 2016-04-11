@@ -76,6 +76,13 @@ $container['db'] = function ($c)
     return $pdo;
 };
 
+// ScopeService
+$container['scope'] = function($c)
+{
+    $scope = new ScopeService();
+    return $scope;
+};
+
 // Authorization
 $container['auth'] = function($c)
 {

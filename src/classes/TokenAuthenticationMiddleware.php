@@ -1,11 +1,13 @@
 <?php
+declare(strict_types=1);
 
+use \Monolog\Logger as Logger;
 use \Psr\Http\Message\ServerRequestInterface as RequestInterface;
 use \Psr\Http\Message\ResponseInterface as ResponseInterface;
 
 class TokenAuthenticationMiddleware
 {
-    public function __construct($auth, $db, $logger, $options = array())
+    public function __construct(Authorization $auth, PDO $db, Logger $logger, array $options = array())
     {
         $this->auth = $auth;
         $this->db = $db;

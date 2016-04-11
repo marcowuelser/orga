@@ -21,6 +21,11 @@ function injectRoutes($app, $config)
         $container->get('auth'),
         $authOn ? UserRoleFlag::RoleAuthor : UserRoleFlag::RoleGuest);
 
+    $requireScope = new ScopeAuthorizationMiddleware(
+        $container->get('auth'),
+        $container->get('scope'),
+        $container->get('db'),
+        $container->get('logger'));
     // Setup routes
 
     $app->get('/', function () use($app)
@@ -160,7 +165,7 @@ function injectRoutes($app, $config)
         $mapper = new MessageMapper($this->db, $this->logger);
         $rulesets = $mapper->selectAll();
         return responseWithJson($response, $rulesets);
-    });
+    })->add($requireScope);
 
     $app->get('/messages/inbox', function (Request $request, Response $response)
     {
@@ -168,55 +173,37 @@ function injectRoutes($app, $config)
         // If no scope is passed, user is used.
         // If scope is player, the player id must be passed as reference
         // If the scope is character, the character id must be passed as reference
-
-        $userId = $this->auth->getCurrentUserId();
-        $scopeId = ScopeEnum::ScopeUser;
-        $reference = -1;
         $showInactive = false;
 
-        // TODO check if only the supported parameters are passed and the values make sense
         $allGetVars = $request->getQueryParams();
         foreach($allGetVars as $key => $param)
         {
-            //GET parameters list
-            if ($key == "scope")
-            {
-                $scopeId = $param;
-            }
-            if ($key == "reference")
-            {
-                $reference = $param;
-            }
-            if ($key == "show_deleted")
+             if ($key == "show_deleted")
             {
                 $showInactive = true;
             }
         }
 
-        // TODO Check if the current user is allowed to get the selected informations
-        $where = array("scope_id" => $scopeId);
+        $scope = $this->scope->getScope();
+        $where = array("scope_id" => $scope);
         if (!$showInactive)
         {
              $where["active"] = 1;
         }
-        if ($scopeId == ScopeEnum::ScopeUser)
+        if ($scope == ScopeEnum::ScopeUser)
         {
             // game_id is not relevant for user messages
-            $where["destination_id"] = $userId;
+            $where["destination_id"] = $this->scope->getReferenceId();
         }
-        if ($scopeId == ScopeEnum::ScopePlayer)
+        if ($scope == ScopeEnum::ScopePlayer)
         {
-            $gameId = $reference;
-            $playerId = $userId; // TODO get player id from userId and gameId
-            $where["game_id"] = $gameId;
-            $where["destination_id"] = $playerId;
+            $where["game_id"] = $this->scope->getGameId();
+            $where["destination_id"] = $this->scope->getReferenceId();
         }
-        if ($scopeId == ScopeEnum::ScopeCharacter)
+        if ($scope == ScopeEnum::ScopeCharacter)
         {
-            $characterId = $reference;
-            $gameId = 1; // Get gameId from characterId
-            $where["game_id"] = $gameId;
-            $where["destination_id"] = $characterId;
+            $where["game_id"] = $this->scope->getGameId();
+            $where["destination_id"] = $this->scope->getReferenceId();
         }
         print_r2($where);
         $mapper = new MessageMapper($this->db, $this->logger);
@@ -224,7 +211,7 @@ function injectRoutes($app, $config)
         $order = array("created" => false);
         $messages = $mapper->select($where, $order, 2, $exclude);
         return responseWithJson($response, $messages);
-    });
+    })->add($requireScope);
 
     $app->get('/messages/outbox', function (Request $request, Response $response)
     {
@@ -286,7 +273,7 @@ function injectRoutes($app, $config)
         $order = array("created" => false);
         $messages = $mapper->select($where, $order, 2, $exclude);
         return responseWithJson($response, $messages);
-    });
+    })->add($requireScope);
 
     $app->post('/message', function (Request $request, Response $response)
     {
@@ -298,7 +285,7 @@ function injectRoutes($app, $config)
         $mapper = new MessageMapper($this->db, $this->logger);
         $message = $mapper->insert($data);
         return responseWithJson($response, $message, 201);
-    });
+    })->add($requireScope);
 
     $app->get('/message/{id}', function (Request $request, Response $response, $args)
     {
@@ -308,7 +295,7 @@ function injectRoutes($app, $config)
         $mapper = new MessageMapper($this->db, $this->logger);
         $message = $mapper->selectById($id);
         return responseWithJson($response, $message);
-    });
+    })->add($requireScope);
 
     $app->put('/message/{id}', function (Request $request, Response $response, $args)
     {
@@ -319,7 +306,7 @@ function injectRoutes($app, $config)
         $mapper = new MessageMapper($this->db, $this->logger);
         $message = $mapper->update($id, $data);
         return responseWithJson($response, $message);
-    });
+    })->add($requireScope);
 
     $app->patch('/message/{id}', function (Request $request, Response $response, $args)
     {
@@ -330,7 +317,7 @@ function injectRoutes($app, $config)
         $mapper = new MessageMapper($this->db, $this->logger);
         $message = $mapper->patch($id, $data);
         return responseWithJson($response, $message);
-    });
+    })->add($requireScope);
 
     $app->delete('/message/{id}', function (Request $request, Response $response, $args)
     {

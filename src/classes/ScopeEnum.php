@@ -53,6 +53,18 @@ class ScopeEnum
         }
         return $array;
     }
+
+    public static function isValid($value)
+    {
+        foreach (ScopeEnum::toList() as $v)
+        {
+            if ($v == $value)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 ?>
