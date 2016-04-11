@@ -78,7 +78,7 @@ abstract class DbMapperAbs
             }
             else
             {
-                throw new Exception("Task with id $id not found", 1001);
+                throw new Exception("$this->name_single with id $id not found", 1001);
             }
         }
         catch (PDOException $ex)
@@ -92,7 +92,7 @@ abstract class DbMapperAbs
         $this->logger->addInfo("Add new $this->name_single");
         if ($data == null)
         {
-            return createErrorResponse(1003, "HTTP body is empty");
+            throw new Exception("HTTP body is empty", 1003);
         }
 
         try
@@ -115,7 +115,7 @@ abstract class DbMapperAbs
     {
         if ($data == null)
         {
-            return createErrorResponse(1003, "HTTP body is empty");
+            throw new Exception("HTTP body is empty", 1003);
         }
 
         $this->logger->addInfo("Update $this->name_single with id $id");
@@ -140,7 +140,7 @@ abstract class DbMapperAbs
     {
         if ($data == null)
         {
-            return createErrorResponse(1003, "HTTP body is empty");
+            throw new Exception("HTTP body is empty", 1003);
         }
 
         $this->logger->addInfo("Patch $this->name_single with id $id");
