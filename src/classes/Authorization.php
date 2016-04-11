@@ -38,7 +38,7 @@ class Authorization
     public function isCurrentUserInRole(int $role) : bool
     {
         $flag = new UserRoleFlag();
-        return $flag->checkFlag($this->currentUser['role_flags'], $role);
+        return UserRoleFlag::checkFlag(intval($this->currentUser['role_flags']), $role);
     }
 
     public function validateToken(string $username, string $token, UserMapper $mapper) : bool

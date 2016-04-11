@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 use \Monolog\Logger as Logger;
 
@@ -86,8 +87,9 @@ class RulesetMapper extends DbMapperAbs
 
     protected function toPublicData(array $data) : array
     {
-        $id = $data["id"];
-        $data['id'] = intval ($data['id']);
+        $id = intval($data["id"]);
+
+        $data['id'] = $id;
         $data["uri"] = $this->getEntryURI($id);
         $data['active'] = intval ($data["active"]) != 0;
         $data['default_order'] = intval ($data["default_order"]);

@@ -1,8 +1,11 @@
 <?php
+declare(strict_types=1);
+
+use \Psr\Http\Message\ResponseInterface as Response;
 
 include_once('util.php');
 
-function getErrorName($errorCode)
+function getErrorName(int $errorCode) : string
 {
     $errorCodes = array(
                 1001 => "Specific entry not found",
@@ -25,7 +28,7 @@ function getErrorName($errorCode)
 }
 
 // http://www.restapitutorial.com/httpstatuscodes.html
-function getHttpStatusCode($errorCode)
+function getHttpStatusCode(int $errorCode) : int
 {
     $errorCodes = array(
                 1001 => 404,
@@ -47,7 +50,7 @@ function getHttpStatusCode($errorCode)
     return 500;
 }
 
-function createErrorResponse($errorCode, $description)
+function createErrorResponse(int $errorCode, string $description) : array
 {
     $data = array(
         "code" => $errorCode,
@@ -58,7 +61,7 @@ function createErrorResponse($errorCode, $description)
     return $data;
 }
 
-function responseWithJsonError($response, $errorCode, $description)
+function responseWithJsonError(Response $response, int $errorCode, string $description) : Response
 {
     $data = createErrorResponse($errorCode, $description);
     return responseWithJson($response, $data);

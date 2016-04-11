@@ -32,28 +32,20 @@ class PlayerRoleFlagTest extends PHPUnit_Framework_TestCase
         // Assert
         $this->assertEquals("Observer", $sut::toString(PlayerRoleFlag::RoleObserver));
         $this->assertEquals("Observer", $sut::toString(1));
-        $this->assertEquals("Observer", $sut::toString("1"));
 
         $this->assertEquals("Player", $sut::toString(PlayerRoleFlag::RolePlayer));
         $this->assertEquals("Player", $sut::toString(2));
-        $this->assertEquals("Player", $sut::toString("2"));
 
         $this->assertEquals("Extra", $sut::toString(PlayerRoleFlag::RoleExtra));
         $this->assertEquals("Extra", $sut::toString(4));
-        $this->assertEquals("Extra", $sut::toString("4"));
 
         $this->assertEquals("DM", $sut::toString(PlayerRoleFlag::RoleDM));
         $this->assertEquals("DM", $sut::toString(8));
-        $this->assertEquals("DM", $sut::toString("8"));
 
-        $this->assertEquals("Unknown", $sut::toString("0"));
-        $this->assertEquals("Unknown", $sut::toString(""));
-        $this->assertEquals("Unknown", $sut::toString(null));
         $this->assertEquals("Unknown", $sut::toString(-1));
         $this->assertEquals("Unknown", $sut::toString(0));
         $this->assertEquals("Unknown", $sut::toString(3));
         $this->assertEquals("Unknown", $sut::toString(42));
-        $this->assertEquals("Unknown", $sut::toString($sut));
     }
 
     public function testList()

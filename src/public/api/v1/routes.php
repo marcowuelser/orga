@@ -1,11 +1,13 @@
 <?php
+declare(strict_types=1);
+
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 include_once('version.php');
 include_once('util/error.php');
 
-function injectRoutes($app, $config)
+function injectRoutes(\Slim\App $app, array $config)
 {
     $container = $app->getContainer();
 

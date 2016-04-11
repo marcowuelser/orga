@@ -31,24 +31,18 @@ class ScopeEnumTest extends PHPUnit_Framework_TestCase
         // Assert
         $this->assertEquals("User", $sut::toString(ScopeEnum::ScopeUser));
         $this->assertEquals("User", $sut::toString(1));
-        $this->assertEquals("User", $sut::toString("1"));
 
         $this->assertEquals("Player", $sut::toString(ScopeEnum::ScopePlayer));
         $this->assertEquals("Player", $sut::toString(2));
-        $this->assertEquals("Player", $sut::toString("2"));
 
         $this->assertEquals("Character", $sut::toString(ScopeEnum::ScopeCharacter));
         $this->assertEquals("Character", $sut::toString(4));
-        $this->assertEquals("Character", $sut::toString("4"));
 
-        $this->assertEquals("Unknown", $sut::toString(""));
-        $this->assertEquals("Unknown", $sut::toString(null));
         $this->assertEquals("Unknown", $sut::toString(-1));
         $this->assertEquals("Unknown", $sut::toString(0));
         $this->assertEquals("Unknown", $sut::toString(3));
         $this->assertEquals("Unknown", $sut::toString(5));
         $this->assertEquals("Unknown", $sut::toString(42));
-        $this->assertEquals("Unknown", $sut::toString($sut));
     }
 
     public function testList()

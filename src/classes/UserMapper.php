@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 use \Monolog\Logger as Logger;
 
@@ -202,14 +203,16 @@ class UserMapper extends DbMapperAbs
 
     protected function toPublicData(array $data) : array
     {
-        $id = $data["id"];
+        $id = intval($data["id"]);
+        $role = intval($data["role_flags"]);
+        $order = intval ($data["default_order"]);
         return array(
-            "id" => intval ($id),
+            "id" => $id,
             "username" => $data["username"],
             "name" => $data["name"],
-            "role_flags" => intval ($data["role_flags"]),
-            "role" => UserRoleFlag::toString($data["role_flags"]),
-            "default_order" => intval ($data["default_order"]),
+            "role_flags" => $role,
+            "role" => UserRoleFlag::toString($role),
+            "default_order" => $order,
             "active" => intval ($data["active"]) != 0,
             "uri" => $this->getEntryURI($id));
     }

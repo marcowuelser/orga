@@ -1,4 +1,7 @@
 <?php
+declare(strict_types=1);
+
+use \Psr\Http\Message\ResponseInterface as Response;
 
 function print_r2($val)
 {
@@ -7,7 +10,7 @@ function print_r2($val)
     echo  '</pre>';
 }
 
-function responseWithJson($response, $data, $okStatusCode = 200)
+function responseWithJson(Response $response, array $data, int $okStatusCode = 200) : Response
 {
     if (isErrorResponse($data))
     {
@@ -24,7 +27,7 @@ function responseWithJson($response, $data, $okStatusCode = 200)
     return $response;
 }
 
-function isErrorResponse($data)
+function isErrorResponse(array $data) : bool
 {
     if (is_array($data))
     {

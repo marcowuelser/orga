@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 class PlayerRoleFlag
 {
@@ -8,7 +9,7 @@ class PlayerRoleFlag
     const RoleExtra = 4;
     const RoleDM = 8;
 
-    public static function toString($value)
+    public static function toString(int $value) : string
     {
         if (is_object($value))
         {
@@ -29,7 +30,7 @@ class PlayerRoleFlag
         return "Unknown";
     }
 
-    public static function toList()
+    public static function toList() : array
     {
         return array(
             PlayerRoleFlag::RoleObserver,
@@ -39,7 +40,7 @@ class PlayerRoleFlag
         );
     }
 
-    public static function toArray()
+    public static function toArray() : array
     {
         $array = array();
         foreach (PlayerRoleFlag::toList() as $id)
@@ -49,7 +50,7 @@ class PlayerRoleFlag
         return $array;
     }
 
-    public static function toAssocArray()
+    public static function toAssocArray() : array
     {
         $array = array();
         foreach (PlayerRoleFlag::toList() as $id)
@@ -59,17 +60,17 @@ class PlayerRoleFlag
         return $array;
     }
 
-    public static function checkFlag($value, $flag)
+    public static function checkFlag(int $value, int $flag) : bool
     {
         return ($value & $flag) > 0;
     }
 
-    public static function setFlag($value, $flag)
+    public static function setFlag(int $value, int $flag) : int
     {
         return ($value | $flag);
     }
 
-    public static function clearFlag($value, $flag)
+    public static function clearFlag(int $value, int $flag) : int
     {
         return ($value & ~$flag);
     }
