@@ -36,6 +36,11 @@ class TokenAuthenticationMiddleware
             $decoded = base64_decode($matches[1]);
             list($username, $token) = explode(":", $decoded);
         }
+        if (!$username || !$token)
+        {
+            $response = $response->withStatus(401);
+            return $response;
+        }
 
         if (!$this->auth->validateToken($username, $token, $mapper))
         {

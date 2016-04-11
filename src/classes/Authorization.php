@@ -43,11 +43,6 @@ class Authorization
 
     public function validateToken(string $username, string $token, UserMapper $mapper) : bool
     {
-        if (!$username || !$token)
-        {
-            return false;
-        }
-
         try
         {
             $response = $mapper->selectByToken($username, $token);
