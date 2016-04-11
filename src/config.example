@@ -12,7 +12,8 @@ function getConfig()
     $config['determineRouteBeforeAppMiddleware'] = true;
     $config['displayErrorDetails'] = true;
     $config['authenticationOn'] = true;
-    
+    $config['baseURI'] = "https://my.server.com/api/v1/";
+
     $config['db']['host']   = "";
     $config['db']['user']   = "";
     $config['db']['pass']   = "";
