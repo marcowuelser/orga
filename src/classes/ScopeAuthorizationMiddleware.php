@@ -15,7 +15,7 @@ class ScopeAuthorizationMiddleware
         $this->logger = $logger;
     }
 
-    public function __invoke(Request $request, Response $response, callable $next) : Response
+    public function __invoke(Request $request, Response $response, callable $next)
     {
         $this->scope->parseScope($request->getQueryParams(), $this->auth, $this->db, $this->logger);
 
