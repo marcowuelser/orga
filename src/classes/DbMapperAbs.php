@@ -350,8 +350,6 @@ abstract class DbMapperAbs
 
     private function createSqlSelect(string $table, array $where = array(), array $order = array(), int $limit = 100, int $offset = -1) : string
     {
-        //print_r2($where);
-        //print_r2($order);
         $sql = "SELECT * FROM `$table`";
         $sql .= $this->createSqlWhereClause($where);
         $sql .= $this->createSqlOrderClause($order);
