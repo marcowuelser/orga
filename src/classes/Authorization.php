@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use \Psr\Http\Message\ServerRequestInterface as Request;
+
 class Authorization
 {
     public function __construct()
@@ -37,7 +39,10 @@ class Authorization
 
     public function isCurrentUserInRole(int $role) : bool
     {
-        $flag = new UserRoleFlag();
+        if ($role == 0)
+        {
+            return true;
+        }
         return UserRoleFlag::checkFlag(intval($this->currentUser['role_flags']), $role);
     }
 
@@ -109,7 +114,7 @@ class Authorization
 
     // static util
 
-    public static function parseCredentials(array $request, string &$username, string &$password) : bool
+    public static function parseCredentials(Request $request, string &$username, string &$password) : bool
     {
         $username = false;
         $password = false;

@@ -7,18 +7,20 @@ use \Psr\Http\Message\ResponseInterface as Response;
 function injectRoutesSystem(\Slim\App $app, array $config)
 {
     $container = $app->getContainer();
-
-    // Enable token authorization for all routes except for ../user/login.
     $authOn = $config["authenticationOn"];
 
     // Authorization
     $requireAdmin = new UserAuthorizationMiddleware(
         $container->get('auth'),
-        $authOn ? UserRoleFlag::RoleAdmin : UserRoleFlag::RoleGuest);
+        $authOn ? UserRoleFlag::RoleAdmin : 0);
 
     $requireAuthor = new UserAuthorizationMiddleware(
         $container->get('auth'),
-        $authOn ? UserRoleFlag::RoleAuthor : UserRoleFlag::RoleGuest);
+        $authOn ? UserRoleFlag::RoleAuthor : 0);
+
+    $requireUser = new UserAuthorizationMiddleware(
+        $container->get('auth'),
+        $authOn ? UserRoleFlag::RoleUser : 0);
 
     // Setup routes
 
@@ -37,7 +39,7 @@ function injectRoutesSystem(\Slim\App $app, array $config)
         $mapper = new SystemMapper($this->db, $this->logger);
         $system = $mapper->selectAll();
         return responseWithJson($response, $system, 200);
-    });
+    })->add($requireUser);
 
     $app->patch('/system', function (Request $request, Response $response)
     {
@@ -53,8 +55,8 @@ function injectRoutesSystem(\Slim\App $app, array $config)
     $app->get('/system/user/login', function (Request $request, Response $response)
     {
         // Only public endpoint, used to log in.
-        $username = false;
-        $password = false;
+        $username = "";
+        $password = "";
         if (!Authorization::parseCredentials($request, $username, $password))
         {
             return responseWithJsonError($response, 3001, "No credentials");
@@ -73,7 +75,7 @@ function injectRoutesSystem(\Slim\App $app, array $config)
         $data = $this->auth->logoutCurrentUser($mapper);
         $response = $response->withStatus(204);
         return $response;
-    });
+    })->add($requireUser);
 
     $app->get('/system/user', function (Request $request, Response $response)
     {
@@ -81,7 +83,7 @@ function injectRoutesSystem(\Slim\App $app, array $config)
         $mapper = new UserMapper($this->db, $this->logger);
         $users = $mapper->selectById($id);
         return responseWithJson($response, $users);
-    });
+    })->add($requireUser);
 
     $app->patch('/system/user', function (Request $request, Response $response)
     {
@@ -90,7 +92,7 @@ function injectRoutesSystem(\Slim\App $app, array $config)
         $mapper = new UserMapper($this->db, $this->logger);
         $user = $this->auth->patchCurrentUser($data, $mapper);
         return responseWithJson($response, $user);
-    });
+    })->add($requireUser);
 
     $app->put('/system/user/password', function (Request $request, Response $response)
     {
@@ -99,7 +101,7 @@ function injectRoutesSystem(\Slim\App $app, array $config)
         $mapper = new UserMapper($this->db, $this->logger);
         $user = $this->auth->changeCurrentUserPassword($data, $mapper);
         return responseWithJson($response, $user);
-    });
+    })->add($requireUser);
 
     // User Management
 
@@ -147,7 +149,7 @@ function injectRoutesSystem(\Slim\App $app, array $config)
     $app->get('/system/users/roles', function (Request $request, Response $response)
     {
         return responseWithJson($response, UserRoleFlag::toAssocArray());
-    });
+    })->add($requireUser);
 
     // Ruleset Management
 
@@ -156,7 +158,7 @@ function injectRoutesSystem(\Slim\App $app, array $config)
         $mapper = new RulesetMapper($this->db, $this->logger);
         $rulesets = $mapper->selectAll();
         return responseWithJson($response, $rulesets);
-    });
+    })->add($requireUser);
 
     $app->post('/ruleset', function (Request $request, Response $response)
     {
@@ -172,7 +174,7 @@ function injectRoutesSystem(\Slim\App $app, array $config)
         $mapper = new RulesetMapper($this->db, $this->logger);
         $ruleset = $mapper->selectById($id);
         return responseWithJson($response, $ruleset);
-    });
+    })->add($requireUser);
 
     $app->put('/ruleset/{id}', function (Request $request, Response $response, $args)
     {
@@ -209,7 +211,7 @@ function injectRoutesSystem(\Slim\App $app, array $config)
         // $mapper = new GameMapper($this->db);
         $games = array(); // $mapper->getGames();
         return responseWithJson($response, $games);
-    });
+    })->add($requireUser);
 
 }
 

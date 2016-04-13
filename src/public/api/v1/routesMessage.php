@@ -33,7 +33,7 @@ function injectRoutesMessage(\Slim\App $app, array $config)
         $mapper = new MessageMapper($this->db, $this->logger);
         $rulesets = $mapper->selectAll();
         return responseWithJson($response, $rulesets);
-    })->add($requireScope);
+    })->add($requireUser)->add($requireScope);
 
     $app->get('/messages/inbox', function (Request $request, Response $response)
     {
@@ -79,7 +79,7 @@ function injectRoutesMessage(\Slim\App $app, array $config)
         $order = array("created" => false);
         $messages = $mapper->select($where, $order, 2, $exclude);
         return responseWithJson($response, $messages);
-    })->add($requireScope);
+    })->add($requireUser)->add($requireScope);
 
     $app->get('/messages/outbox', function (Request $request, Response $response)
     {
@@ -140,7 +140,7 @@ function injectRoutesMessage(\Slim\App $app, array $config)
         $order = array("created" => false);
         $messages = $mapper->select($where, $order, 2, $exclude);
         return responseWithJson($response, $messages);
-    })->add($requireScope);
+    })->add($requireUser)->add($requireScope);
 
     $app->post('/message', function (Request $request, Response $response)
     {
@@ -152,7 +152,7 @@ function injectRoutesMessage(\Slim\App $app, array $config)
         $mapper = new MessageMapper($this->db, $this->logger);
         $message = $mapper->insert($data);
         return responseWithJson($response, $message, 201);
-    })->add($requireScope);
+    })->add($requireUser)->add($requireScope);
 
     $app->get('/message/{id}', function (Request $request, Response $response, $args)
     {
@@ -174,7 +174,7 @@ function injectRoutesMessage(\Slim\App $app, array $config)
         }
 
         return responseWithJson($response, $message);
-    })->add($requireScope);
+    })->add($requireUser)->add($requireScope);
 
     $app->put('/message/{id}', function (Request $request, Response $response, $args)
     {
@@ -198,7 +198,7 @@ function injectRoutesMessage(\Slim\App $app, array $config)
 
         $message = $mapper->update($id, $data);
         return responseWithJson($response, $message);
-    })->add($requireScope);
+    })->add($requireUser)->add($requireScope);
 
     $app->patch('/message/{id}', function (Request $request, Response $response, $args)
     {

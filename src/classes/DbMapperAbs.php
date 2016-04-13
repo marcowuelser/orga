@@ -109,7 +109,8 @@ abstract class DbMapperAbs
             $this->bindFields($stmt, $fields);
             $stmt->execute();
 
-            return $this->selectById($this->db->lastInsertId());
+            $id = intval($this->db->lastInsertId());
+            return $this->selectById($id);
         }
         catch (PDOException $ex)
         {
