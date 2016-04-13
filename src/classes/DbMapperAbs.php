@@ -42,6 +42,33 @@ abstract class DbMapperAbs
         }
     }
 
+    public function selectCount(array $where) : array
+    {
+        $this->logger->addInfo("Get $this->name_multi");
+
+        try
+        {
+            $sql = $this->createSqlSelectCount($this->table, $where);
+            $stmt = $this->db->prepare($sql);
+            $this->bindWhereFields($stmt, $where);
+            $stmt->execute();
+
+            $data = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($data)
+            {
+                return $data;
+            }
+            else
+            {
+                return array();
+            }
+        }
+        catch (PDOException $ex)
+        {
+            throw new Exception($ex->getMessage(), 2001);
+        }
+    }
+
     public function selectAll() : array
     {
         $this->logger->addInfo("Get all $this->name_multi");
@@ -355,6 +382,13 @@ abstract class DbMapperAbs
         $sql .= $this->createSqlWhereClause($where);
         $sql .= $this->createSqlOrderClause($order);
         $sql .= $this->createSqlLimitClause($limit, $offset);
+        return $sql;
+    }
+
+    private function createSqlSelectCount(string $table, array $where = array(), array $order = array(), int $limit = 100, int $offset = -1) : string
+    {
+        $sql = "SELECT count(id) as `count` FROM `$table`";
+        $sql .= $this->createSqlWhereClause($where);
         return $sql;
     }
 

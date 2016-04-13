@@ -15,8 +15,12 @@ require_once('version.php');
 include_once('util/util.php');
 
 // Local
-include_once('./routes.php');
+include_once('./routesSystem.php');
+include_once('./routesUser.php');
 include_once('./routesMessage.php');
+include_once('./routesBoard.php');
+include_once('./routesGame.php');
+include_once('./routesRuleset.php');
 
 mb_language("uni");
 mb_regex_encoding('UTF-8');
@@ -110,8 +114,19 @@ if ($config["authenticationOn"])
     $app->add($tokenAuth);
 }
 
+$app->get('/', function (Request $request, Response $response) use($app)
+{
+    return responseWithJson($response, array(
+        "message" =>
+        "Welcome to the Slim 3.0 based ".Constants::ORGA_SERVER_NAME_FULL));
+});
+
 injectRoutesSystem($app, $config);
+injectRoutesUser($app, $config);
 injectRoutesMessage($app, $config);
+injectRoutesBoard($app, $config);
+injectRoutesGame($app, $config);
+injectRoutesRuleset($app, $config);
 
 // CORS
 $corsOptions = array(

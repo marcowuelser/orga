@@ -5,16 +5,16 @@ use \Monolog\Logger as Logger;
 
 require_once("classes/DbMapperAbs.php");
 
-class MessageMapper extends DbMapperAbs
+class BoardEntryMapper extends DbMapperAbs
 {
     public function __construct(PDO $db, Logger $logger)
     {
         $this->db = $db;
         $this->logger = $logger;
-        $this->table = "s_message";
-        $this->name_single = "message";
-        $this->name_multi = "messages";
-        $this->uriSingle = "message";
+        $this->table = "s_board_entry";
+        $this->name_single = "entry";
+        $this->name_multi = "entries";
+        $this->uriSingle = "board/entry";
     }
 
     // Query helpers
@@ -24,21 +24,19 @@ class MessageMapper extends DbMapperAbs
         $fields = array();
 
         // user fields
-        $this->requireInt("game_id", $data, $fields);
-        $this->requireInt("scope_id", $data, $fields);
+        $this->requireInt("board_id", $data, $fields);
+        $this->requireInt("parent_id", $data, $fields);
         $this->requireInt("creator_id", $data, $fields);
-        $this->requireInt("destination_id", $data, $fields);
+        $this->requireInt("updater_id", $data, $fields);
         $this->requireString("caption", $data, $fields);
         $this->requireString("content", $data, $fields);
-        $this->requireBool("sent", $data, $fields);
 
         // system fields
         $now = date('Y-m-d H:i:s');
         $fields['created'] = $now;
         $fields['updated'] = $now;
-        $fields['default_order'] = 0;
+        $fields['locked'] = false;
         $fields['active'] = true;
-        $fields['viewed'] = false;
 
         return $fields;
     }
@@ -48,16 +46,14 @@ class MessageMapper extends DbMapperAbs
         $fields = array();
 
         // user fields
-        $this->requireInt("game_id", $data, $fields);
-        $this->requireInt("scope_id", $data, $fields);
+        $this->requireInt("board_id", $data, $fields);
+        $this->requireInt("parent_id", $data, $fields);
         $this->requireInt("creator_id", $data, $fields);
-        $this->requireInt("destination_id", $data, $fields);
+        $this->requireInt("updater_id", $data, $fields);
         $this->requireString("caption", $data, $fields);
         $this->requireString("content", $data, $fields);
         $this->requireBool("active", $data, $fields);
-        $this->requireInt("default_order", $data, $fields);
-        $this->requireBool("sent", $data, $fields);
-        $this->requireBool("viewed", $data, $fields);
+        $this->requireBool("locked", $data, $fields);
 
         // system fields
         $now = date('Y-m-d H:i:s');
@@ -70,16 +66,14 @@ class MessageMapper extends DbMapperAbs
         $fields = array();
 
         // user fields
-        $this->optionalInt("game_id", $data, $fields);
-        $this->optionalInt("scope_id", $data, $fields);
+        $this->optionalInt("board_id", $data, $fields);
+        $this->optionalInt("parent_id", $data, $fields);
         $this->optionalInt("creator_id", $data, $fields);
-        $this->optionalInt("destination_id", $data, $fields);
+        $this->optionalInt("updater_id", $data, $fields);
         $this->optionalString("caption", $data, $fields);
         $this->optionalString("content", $data, $fields);
         $this->optionalBool("active", $data, $fields);
-        $this->optionalInt("default_order", $data, $fields);
-        $this->opionalBool("sent", $data, $fields);
-        $this->opionalBool("viewed", $data, $fields);
+        $this->optionalBool("locked", $data, $fields);
 
         if (empty($fields))
         {
@@ -96,47 +90,67 @@ class MessageMapper extends DbMapperAbs
     protected function toPublicData(array $data) : array
     {
         $id = intval($data["id"]);
-        $scope = intval($data["scope_id"]);
+        $boardId = intval($data["board_id"]);
+        $parentId = intval($data["parent_id"]);
         $creatorId = intval($data["creator_id"]);
-        $destinationId = intval($data["destination_id"]);
+        $updaterId = intval($data["updater_id"]);
 
         $data['id'] = $id;
         $data["uri"] = $this->getEntryURI($id);
-        $data['sent'] = intval ($data["sent"]) != 0;
-        $data['viewed'] = intval ($data["viewed"]) != 0;
         $data['active'] = intval ($data["active"]) != 0;
-        $data['default_order'] = intval ($data["default_order"]);
+        $data['locked'] = intval ($data["locked"]) != 0;
 
-        if ($scope == ScopeEnum::ScopeUser)
+        $boardMapper = new BoardMapper($this->db, $this->logger);
+        $board = $boardMapper->selectById($boardId);
+        $scopeId = intval($board["scope_id"]);
+
+        if ($scopeId == ScopeEnum::ScopeUser)
         {
             $userMapper = new UserMapper($this->db, $this->logger);
+
             $creator = $userMapper->selectById($creatorId);
-            $destination = $userMapper->selectById($destinationId);
             $data['creator'] = $creator["name"];
-            $data['destination'] = $destination["name"];
+
+            if ($updaterId > 0)
+            {
+                $updater = $userMapper->selectById($updaterId);
+                $data['updater'] = $destination["name"];
+            }
         }
-        if ($scope == ScopeEnum::ScopePlayer)
+        if ($scopeId == ScopeEnum::ScopePlayer)
         {
             $playerMapper = new PlayerMapper($this->db, $this->logger);
-            $creator = $playerMapper->selectById($creatorId);
-            $destination = $playerMapper->selectById($destinationId);
-
             $userMapper = new UserMapper($this->db, $this->logger);
-            $creatorId = intval($creator["user_id"]);
-            $destinationId = intval($destination["user_id"]);
-            $creator = $userMapper->selectById($creatorId);
-            $destination = $userMapper->selectById($destinationId);
 
+            $creator = $playerMapper->selectById($creatorId);
+            $creatorId = intval($creator["user_id"]);
+            $creator = $userMapper->selectById($creatorId);
             $data['creator'] = $creator["name"];
-            $data['destination'] = $destination["name"];
+
+            if ($updaterId > 0)
+            {
+                $updater = $playerMapper->selectById($updaterId);
+                $updaterId = intval($updater["user_id"]);
+                $updater = $userMapper->selectById($destinationId);
+                $data['updater'] = $updater["name"];
+            }
         }
-        if ($scope == ScopeEnum::ScopeCharacter)
+        if ($scopeId == ScopeEnum::ScopeCharacter)
         {
             $characterMapper = new CharacterMapper($this->db, $this->logger);
+
             $creator = $characterMapper->selectById($creatorId);
-            $destination = $characterMapper->selectById($destinationId);
             $data['creator'] = $creator["name_short"];
-            $data['destination'] = $destination["name_short"];
+
+            if ($updaterId > 0)
+            {
+                $updater = $characterMapper->selectById($updaterId);
+                $data['updater'] = $updater["name_short"];
+            }
+            else
+            {
+                $data['updater'] = "";
+            }
         }
         return $data;
     }

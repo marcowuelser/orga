@@ -30,12 +30,126 @@ function injectRoutesMessage(\Slim\App $app, array $config)
         // Endpoint gets all messages in the system.
         // Only returns messages the current user is allowed to see.
 
-        throw(new Exception("Unimplemented", 2002));
+        $showInactive = getShowInactiveParam($request);
+        $maxCount = getMaxCountParam($request);
+
+        $scope = $this->scope->getScope();
+        $where = array("scope_id" => $scope);
+        $where["active"] = $showInactive ? 0 : 1;
 
         $mapper = new MessageMapper($this->db, $this->logger);
-        // TODO define correct filter for select statement !
-        $rulesets = $mapper->selectAll();
-        return responseWithJson($response, $rulesets);
+        $exclude = array('content');
+        $order = array("created" => false);
+
+        $messages = $mapper->select($where, $order, $maxCount, $exclude);
+        return responseWithJson($response, $messages);
+    })->add($requireUser)->add($requireScope);
+
+    $app->get('/messages/count', function (Request $request, Response $response)
+    {
+        // Endpoint gets the number of messages in the system.
+        // Only counts messages the current user is allowed to see.
+
+        $showInactive = getShowInactiveParam($request);
+        $scope = $this->scope->getScope();
+        $mapper = new MessageMapper($this->db, $this->logger);
+
+        // inbox
+        $where = array("scope_id" => $scope);
+        $where["active"] = $showInactive ? 0 : 1;
+        $where["sent"] = true;
+        // TODO Move to ScopeService
+        if ($scope == ScopeEnum::ScopeUser)
+        {
+            // game_id is not relevant for user messages
+            $where["destination_id"] = $this->scope->getReferenceId();
+        }
+        if ($scope == ScopeEnum::ScopePlayer)
+        {
+            $where["game_id"] = $this->scope->getGameId();
+            $where["destination_id"] = $this->scope->getReferenceId();
+        }
+        if ($scope == ScopeEnum::ScopeCharacter)
+        {
+            $where["game_id"] = $this->scope->getGameId();
+            $where["destination_id"] = $this->scope->getReferenceId();
+        }
+        $countInbox = $mapper->selectCount($where);
+
+        // inbox (new)
+        $where = array("scope_id" => $scope);
+        $where["active"] = $showInactive ? 0 : 1;
+        $where["sent"] = true;
+        $where["viewed"] = 0;
+        // TODO Move to ScopeService
+        if ($scope == ScopeEnum::ScopeUser)
+        {
+            // game_id is not relevant for user messages
+            $where["destination_id"] = $this->scope->getReferenceId();
+        }
+        if ($scope == ScopeEnum::ScopePlayer)
+        {
+            $where["game_id"] = $this->scope->getGameId();
+            $where["destination_id"] = $this->scope->getReferenceId();
+        }
+        if ($scope == ScopeEnum::ScopeCharacter)
+        {
+            $where["game_id"] = $this->scope->getGameId();
+            $where["destination_id"] = $this->scope->getReferenceId();
+        }
+        $countInboxNew = $mapper->selectCount($where);
+
+        // outbox
+        $where = array("scope_id" => $scope);
+        $where["active"] = $showInactive ? 0 : 1;
+        $where["sent"] = true;
+        // TODO Move to ScopeService
+        if ($scope == ScopeEnum::ScopeUser)
+        {
+            // game_id is not relevant for user messages
+            $where["creator_id"] = $this->scope->getReferenceId();
+        }
+        if ($scope == ScopeEnum::ScopePlayer)
+        {
+            $where["game_id"] = $this->scope->getGameId();
+            $where["creator_id"] = $this->scope->getReferenceId();
+        }
+        if ($scope == ScopeEnum::ScopeCharacter)
+        {
+            $where["game_id"] = $this->scope->getGameId();
+            $where["creator_id"] = $this->scope->getReferenceId();
+        }
+        $countOutbox = $mapper->selectCount($where);
+
+        // outbox (unsent)
+        $where = array("scope_id" => $scope);
+        $where["active"] = $showInactive ? 0 : 1;
+        $where["sent"] = 0;
+        // TODO Move to ScopeService
+        if ($scope == ScopeEnum::ScopeUser)
+        {
+            // game_id is not relevant for user messages
+            $where["creator_id"] = $this->scope->getReferenceId();
+        }
+        if ($scope == ScopeEnum::ScopePlayer)
+        {
+            $where["game_id"] = $this->scope->getGameId();
+            $where["creator_id"] = $this->scope->getReferenceId();
+        }
+        if ($scope == ScopeEnum::ScopeCharacter)
+        {
+            $where["game_id"] = $this->scope->getGameId();
+            $where["creator_id"] = $this->scope->getReferenceId();
+        }
+        $countOutboxUnset = $mapper->selectCount($where);
+
+        return responseWithJson($response,
+            array(
+                "inbox" => $countInbox["count"],
+                "inbox_new" => $countInboxNew["count"],
+                "outbox" => $countOutbox["count"],
+                "drafts" => $countOutboxUnset["count"],
+            ));
     })->add($requireUser)->add($requireScope);
 
     $app->get('/messages/inbox', function (Request $request, Response $response)
@@ -45,16 +159,8 @@ function injectRoutesMessage(\Slim\App $app, array $config)
         // If scope is player, the player id must be passed as reference
         // If the scope is character, the character id must be passed as reference
 
-        // TODO Move to helper function
-        $showInactive = false;
-        $allGetVars = $request->getQueryParams();
-        foreach($allGetVars as $key => $param)
-        {
-             if ($key == "show_deleted")
-            {
-                $showInactive = true;
-            }
-        }
+        $showInactive = getShowInactiveParam($request);
+        $maxCount = getMaxCountParam($request);
 
         $scope = $this->scope->getScope();
         $where = array("scope_id" => $scope);
@@ -80,7 +186,7 @@ function injectRoutesMessage(\Slim\App $app, array $config)
         $mapper = new MessageMapper($this->db, $this->logger);
         $exclude = array('content');
         $order = array("created" => false);
-        $messages = $mapper->select($where, $order, 2, $exclude);
+        $messages = $mapper->select($where, $order, $maxCount, $exclude);
         return responseWithJson($response, $messages);
     })->add($requireUser)->add($requireScope);
 
@@ -92,6 +198,8 @@ function injectRoutesMessage(\Slim\App $app, array $config)
         // If no scope is passed, user is used.
         // If scope is player, the player id must be passed as reference
         // If the scope is character, the character id must be passed as reference
+
+        $maxCount = getMaxCountParam($request);
 
         $scope = $this->scope->getScope();
         $where = array("scope_id" => $scope);
@@ -116,7 +224,7 @@ function injectRoutesMessage(\Slim\App $app, array $config)
         $mapper = new MessageMapper($this->db, $this->logger);
         $exclude = array('content');
         $order = array("created" => false);
-        $messages = $mapper->select($where, $order, 2, $exclude);
+        $messages = $mapper->select($where, $order, $maxCount, $exclude);
         return responseWithJson($response, $messages);
     })->add($requireUser)->add($requireScope);
 
@@ -134,7 +242,6 @@ function injectRoutesMessage(\Slim\App $app, array $config)
         $scope = $this->scope->getScope();
         $data["scope_id"] = $scope;
 
-echo "user=".$this->scope->getReferenceId();
         // TODO move to ScopeFactory, refactor to where statement ...
         if ($scope == ScopeEnum::ScopeUser)
         {
