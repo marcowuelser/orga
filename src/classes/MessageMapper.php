@@ -34,7 +34,7 @@ class MessageMapper extends DbMapperAbs
         // system fields
         $now = date('Y-m-d H:i:s');
         $fields['created'] = $now;
-        $fields['updated'] = $now;
+        // $fields['updated'] = $now;
         $fields['default_order'] = 0;
         $fields['active'] = true;
 
