@@ -7,14 +7,16 @@ use \Psr\Http\Message\ResponseInterface as Response;
 function injectRoutesMessage(\Slim\App $app, array $config)
 {
     $container = $app->getContainer();
-
-    // Enable token authorization for all routes except for ../user/login.
     $authOn = $config["authenticationOn"];
 
     // Authorization
     $requireAdmin = new UserAuthorizationMiddleware(
         $container->get('auth'),
-        $authOn ? UserRoleFlag::RoleAdmin : UserRoleFlag::RoleGuest);
+        $authOn ? UserRoleFlag::RoleAdmin : 0);
+
+    $requireUser = new UserAuthorizationMiddleware(
+        $container->get('auth'),
+        $authOn ? UserRoleFlag::RoleUser : 0);
 
     $requireScope = new ScopeAuthorizationMiddleware(
         $container->get('auth'),
@@ -31,6 +33,7 @@ function injectRoutesMessage(\Slim\App $app, array $config)
         throw(new Exception("Unimplemented", 2002));
 
         $mapper = new MessageMapper($this->db, $this->logger);
+        // TODO define correct filter for select statement !
         $rulesets = $mapper->selectAll();
         return responseWithJson($response, $rulesets);
     })->add($requireUser)->add($requireScope);
@@ -41,8 +44,9 @@ function injectRoutesMessage(\Slim\App $app, array $config)
         // If no scope is passed, user is used.
         // If scope is player, the player id must be passed as reference
         // If the scope is character, the character id must be passed as reference
-        $showInactive = false;
 
+        // TODO Move to helper function
+        $showInactive = false;
         $allGetVars = $request->getQueryParams();
         foreach($allGetVars as $key => $param)
         {
@@ -54,10 +58,9 @@ function injectRoutesMessage(\Slim\App $app, array $config)
 
         $scope = $this->scope->getScope();
         $where = array("scope_id" => $scope);
-        if (!$showInactive)
-        {
-             $where["active"] = 1;
-        }
+        $where["active"] = $showInactive ? 0 : 1;
+
+        // TODO Move to ScopeService
         if ($scope == ScopeEnum::ScopeUser)
         {
             // game_id is not relevant for user messages
@@ -83,58 +86,33 @@ function injectRoutesMessage(\Slim\App $app, array $config)
 
     $app->get('/messages/outbox', function (Request $request, Response $response)
     {
+        // TODO use ScopeFactory as in method above !
+
         // Endpoint gets all sent messages by the current user.
         // If no scope is passed, user is used.
         // If scope is player, the player id must be passed as reference
         // If the scope is character, the character id must be passed as reference
-        $userId = $this->auth->getCurrentUserId();
-        $scopeId = ScopeEnum::ScopeUser;
-        $reference = -1;
-        $showActive = true;
 
-        // TODO check if only the supported parameters are passed and the values make sense
-        $allGetVars = $request->getQueryParams();
-        foreach($allGetVars as $key => $param)
-        {
-            //GET parameters list
-            if ($key == "scope")
-            {
-                $scopeId = $param;
-            }
-            if ($key == "reference")
-            {
-                $reference = $param;
-            }
-            if ($key == "show_deleted")
-            {
-                $showActive = false;
-            }
-        }
+        $scope = $this->scope->getScope();
+        $where = array("scope_id" => $scope);
 
-        // TODO Check if the current user is allowed to get the selected informations
-        $where = array("scope_id" => $scopeId);
-        $where["active"] = $showActive ? 1 : 0;
-        if ($scopeId == ScopeEnum::ScopeUser)
+        // TODO Move to ScopeService
+        if ($scope == ScopeEnum::ScopeUser)
         {
             // game_id is not relevant for user messages
-            $where["creator_id"] = $userId;
+            $where["creator_id"] = $this->scope->getReferenceId();
         }
-        if ($scopeId == ScopeEnum::ScopePlayer)
+        if ($scope == ScopeEnum::ScopePlayer)
         {
-            $gameId = $reference;
-            $playerId = $userId; // TODO get player id from userId and gameId
-            $where["game_id"] = $gameId;
-            $where["creator_id"] = $playerId;
+            $where["game_id"] = $this->scope->getGameId();
+            $where["creator_id"] = $this->scope->getReferenceId();
         }
-        if ($scopeId == ScopeEnum::ScopeCharacter)
+        if ($scope == ScopeEnum::ScopeCharacter)
         {
-            $characterId = $reference;
-            $gameId = 1; // Get gameId from characterId
-            $where["game_id"] = $gameId;
-            $where["creator_id"] = $characterId;
+            $where["game_id"] = $this->scope->getGameId();
+            $where["creator_id"] = $this->scope->getReferenceId();
         }
 
-        $user_id = $this->auth->getCurrentUserId();
         $mapper = new MessageMapper($this->db, $this->logger);
         $exclude = array('content');
         $order = array("created" => false);
@@ -145,10 +123,36 @@ function injectRoutesMessage(\Slim\App $app, array $config)
     $app->post('/message', function (Request $request, Response $response)
     {
         // Endpoint sends a message
+
         // TODO Check if the user is allowed to send the message with
-        // the selected scope, origin and destination.
+        // the selected scope, origin and destination and throw if not.
+
+        // TODO Do not throw if admin ? Or add special endpoint for admin ? 
+        //      Sounds better, but need to think it over.
 
         $data = $request->getParsedBody();
+        $scope = $this->scope->getScope();
+        $data["scope_id"] = $scope;
+
+echo "user=".$this->scope->getReferenceId();
+        // TODO move to ScopeFactory, refactor to where statement ...
+        if ($scope == ScopeEnum::ScopeUser)
+        {
+            $data["game_id"] = -1;
+        }
+        else
+        {
+            if ($this->scope->getGameId() != $data["game_id"])
+            {
+                throw new Exception("Game does not match", 1003);
+            }
+        }
+
+        if ($this->scope->getReferenceId() != $data["creator_id"])
+        {
+            throw new Exception("Not allowed to create this message", 3002);
+        }
+
         $mapper = new MessageMapper($this->db, $this->logger);
         $message = $mapper->insert($data);
         return responseWithJson($response, $message, 201);
@@ -161,17 +165,23 @@ function injectRoutesMessage(\Slim\App $app, array $config)
         $id = (int)$args['id'];
         $mapper = new MessageMapper($this->db, $this->logger);
         $message = $mapper->selectById($id);
+        $scope = $this->scope->getScope();
+        $reference = $this->scope->getReferenceId();
 
-        if ($this->scope->getScope() != $message["scope_id"])
+        // TODO move to ScopeFactory, refactor to where statement ...
+        if ($scope != $message["scope_id"])
         {
             throw new Exception("Message scope does not match", 1003);
         }
 
-        if ($this->scope->getReferenceId() != $message["creator_id"] &&
-            $this->scope->getReferenceId() != $message["destination_id"])
+        if ($reference != $message["creator_id"] &&
+            $reference != $message["destination_id"])
         {
             throw new Exception("Not allowed to access this message", 3002);
         }
+
+        // TODO Do not throw if admin ? Or add special endpoint for admin ? 
+        //      Sounds better, but need to think it over.
 
         return responseWithJson($response, $message);
     })->add($requireUser)->add($requireScope);
@@ -183,18 +193,24 @@ function injectRoutesMessage(\Slim\App $app, array $config)
         $id = (int)$args['id'];
         $data = $request->getParsedBody();
         $mapper = new MessageMapper($this->db, $this->logger);
+        $scope = $this->scope->getScope();
+        $reference = $this->scope->getReferenceId();
 
+        // TODO move to ScopeFactory, refactor to where statement ...
         $message = $mapper->selectById($id);
-        if ($this->scope->getScope() != $message["scope_id"])
+        if ($scope != $message["scope_id"])
         {
             throw new Exception("Message scope does not match", 1003);
         }
 
-        if ($this->scope->getReferenceId() != $message["creator_id"] &&
-            $this->scope->getReferenceId() != $message["destination_id"])
+        if ($reference != $message["creator_id"] &&
+            $reference != $message["destination_id"])
         {
             throw new Exception("Not allowed to access this message", 3002);
         }
+
+        // TODO Do not throw if admin ? Or add special endpoint for admin ? 
+        //      Sounds better, but need to think it over.
 
         $message = $mapper->update($id, $data);
         return responseWithJson($response, $message);
@@ -208,6 +224,7 @@ function injectRoutesMessage(\Slim\App $app, array $config)
         $data = $request->getParsedBody();
         $mapper = new MessageMapper($this->db, $this->logger);
 
+        // TODO move to ScopeFactory, refactor to where statement ...
         $message = $mapper->selectById($id);
         if ($this->scope->getScope() != $message["scope_id"])
         {
@@ -219,13 +236,19 @@ function injectRoutesMessage(\Slim\App $app, array $config)
         {
             throw new Exception("Not allowed to access this message", 3002);
         }
+        // TODO Do not throw if admin ? Or add special endpoint for admin ? 
+        //      Sounds better, but need to think it over.
 
         $message = $mapper->patch($id, $data);
         return responseWithJson($response, $message);
-    })->add($requireScope);
+    })->add($requireUser)->add($requireScope);
 
     $app->delete('/message/{id}', function (Request $request, Response $response, $args)
     {
+        // Permanent delete of a message. Admin only, no scope checks required.
+
+        // TODO move to /admin ?
+
         $id = (int)$args['id'];
         $mapper = new MessageMapper($this->db, $this->logger);
         $message = $mapper->delete($id);

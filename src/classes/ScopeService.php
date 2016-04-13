@@ -83,12 +83,15 @@ class ScopeService
                 $player = $playerMapper->selectById($this->currentReferenceId);
 
                 // get game ID from player entry.
-                $this->currentGameId = $player["game_id"];
+                $this->currentGameId = intval($player["game_id"]);
 
                 // assert that the player matches the gurrent user.
-                $player["user_id"];
+                $userId = intval($player["user_id"]);
+                if ($userId != $auth->getCurrentUserId())
+                {
+                    throw new Exception("Player not equal current user", 1003);
+                }
 
-                -1;
                 break;
 
             case ScopeEnum::ScopeCharacter:
@@ -102,11 +105,19 @@ class ScopeService
                 $this->currentGameId = intval($character["game_id"]);
 
                 // assert that the character matches the gurrent user,
-                $player = $playerMapper->selectById(intval($character["player_id"]));
-                $player["game_id"];
-                $player["user_id"];
+                $playerId = intval($character["player_id"]);
+                $player = $playerMapper->selectById($playerId);
+                $userId = intval($player["user_id"]);
+                if ($userId != $auth->getCurrentUserId())
+                {
+                    throw new Exception("Character does not belong to current user", 1003);
+                }
 
-                // or that the current user has the DM role.
+                $gameId = intval($player["game_id"]);
+                if ($gameId != $this->currentGameId)
+                {
+                    throw new Exception("User is not player in this game", 1003);
+                }
                 break;
         }
     }
