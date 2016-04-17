@@ -159,7 +159,7 @@ abstract class DbMapperAbs
             $fields = $this->onUpdate($data);
             $sql = $this->createSqlUpdate($this->table, $fields);
             $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(":field_key", $id);
+            $stmt->bindValue(":field_key", $id);
             $this->bindFields($stmt, $fields);
             $stmt->execute();
             return $this->selectById($id);
@@ -188,7 +188,7 @@ abstract class DbMapperAbs
             }
             $sql = $this->createSqlUpdate($this->table, $fields);
             $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(":field_key", $id);
+            $stmt->bindValue(":field_key", $id);
             $this->bindFields($stmt, $fields);
             $stmt->execute();
             return $this->selectById($id);
