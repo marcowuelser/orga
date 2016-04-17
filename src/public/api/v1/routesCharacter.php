@@ -47,6 +47,7 @@ function injectRoutesCharacter(\Slim\App $app, array $config)
     $app->get('/game/{gameId}/characters', function (
         Request $request, Response $response, $args)
     {
+        $playerId = $this->scope->getPlayerId();
         $gameId = (int)$args['gameId'];
         $showInactive = getShowInactiveParam($request);
         $maxCount = getMaxCountParam($request);
@@ -56,7 +57,9 @@ function injectRoutesCharacter(\Slim\App $app, array $config)
 
         $characterMapper = new CharacterMapper($this->db, $this->logger);
 
-        $where = array("game_id" => $gameId);
+        $where = array(
+            "game_id" => $gameId,
+            "player_id" => $playerId);
         $where["active"] = $showInactive ? 0 : 1;
         $exclude = array();
         $order = array("default_order" => true);
@@ -80,18 +83,10 @@ function injectRoutesCharacter(\Slim\App $app, array $config)
     {
         $characterId = (int)$args['characterId'];
 
-        $gameMapper = new GameMapper($this->db, $this->logger);
-        $game = $gameMapper->selectById($gameId);
-
         $characterMapper = new CharacterMapper($this->db, $this->logger);
-        $player = $characterMapper->selectById($playerId);
+        $character = $characterMapper->selectById($characterId);
 
-        if ($player["game_id"] != $gameId) 
-        {
-            throw new Exception("Character $characterId not in game $gameId", 1003);
-        }
-
-        return responseWithJson($response, $player);
+        return responseWithJson($response, $character);
     })->add($requireUser)->add($requireScopeAny);
 
     $app->put('/character/{characterId}', function (

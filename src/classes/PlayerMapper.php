@@ -84,11 +84,23 @@ class PlayerMapper extends DbMapperAbs
     protected function toPublicData(array $data) : array
     {
         $id = intval($data["id"]);
+        $gameId = intval($data["game_id"]);
+        $userId = intval($data["user_id"]);
+        $roleFlags = intval($data["role_flags"]);
+
+        $userMapper = new UserMapper($this->db, $this->logger);
+        $user = $userMapper->selectById($userId);
+
+        $gameMapper = new GameMapper($this->db, $this->logger);
+        $game = $gameMapper->selectById($gameId);
 
         $data['id'] = $id;
         $data["uri"] = $this->getEntryURI($id);
         $data['active'] = intval ($data["active"]) != 0;
         $data['default_order'] = intval ($data["default_order"]);
+        $data['user'] = $user['name'];
+        $data['game'] = $game['caption'];
+        $data['role'] = PlayerRoleFlag::toString($roleFlags);
         return $data;
     }
 }

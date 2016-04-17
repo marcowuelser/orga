@@ -70,16 +70,8 @@ function injectRoutesPlayer(\Slim\App $app, array $config)
     {
         $playerId = (int)$args['playerId'];
 
-        $gameMapper = new GameMapper($this->db, $this->logger);
-        $game = $gameMapper->selectById($gameId);
-
         $playerMapper = new PlayerMapper($this->db, $this->logger);
         $player = $playerMapper->selectById($playerId);
-
-        if ($player["game_id"] != $gameId) 
-        {
-            throw new Exception("Player $playerId not in game $gameId", 1003);
-        }
 
         return responseWithJson($response, $player);
     })->add($requireUser)->add($requireScopeAny);
