@@ -117,7 +117,7 @@ class BoardEntryMapper extends DbMapperAbs
                 $data['updater'] = $destination["name"];
             }
         }
-        if ($scopeId == ScopeEnum::ScopePlayer)
+        if ($scopeId == ScopeEnum::ScopeGame)
         {
             $playerMapper = new PlayerMapper($this->db, $this->logger);
             $userMapper = new UserMapper($this->db, $this->logger);

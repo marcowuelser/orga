@@ -75,7 +75,7 @@ class ScopeService
                 $this->currentGameId = -1;
                 break;
 
-            case ScopeEnum::ScopePlayer:
+            case ScopeEnum::ScopeGame:
                 if (!$hasReference)
                 {
                     throw new Exception("No player reference", 1003);

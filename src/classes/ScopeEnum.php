@@ -4,7 +4,7 @@ declare(strict_types=1);
 class ScopeEnum
 {
     const ScopeUser = 1;
-    const ScopePlayer = 2;
+    const ScopeGame = 2;
     const ScopeCharacter = 4;
 
     public static function toString($value)
@@ -18,8 +18,8 @@ class ScopeEnum
         {
             case ScopeEnum::ScopeUser:
                 return "User";
-            case ScopeEnum::ScopePlayer:
-                return "Player";
+            case ScopeEnum::ScopeGame:
+                return "Game";
             case ScopeEnum::ScopeCharacter:
                 return "Character";
         }
@@ -30,7 +30,7 @@ class ScopeEnum
     {
         return array(
             ScopeEnum::ScopeUser,
-            ScopeEnum::ScopePlayer,
+            ScopeEnum::ScopeGame,
             ScopeEnum::ScopeCharacter,
         );
     }

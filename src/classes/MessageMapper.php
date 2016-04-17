@@ -115,7 +115,7 @@ class MessageMapper extends DbMapperAbs
             $data['creator'] = $creator["name"];
             $data['destination'] = $destination["name"];
         }
-        if ($scope == ScopeEnum::ScopePlayer)
+        if ($scope == ScopeEnum::ScopeGame)
         {
             $playerMapper = new PlayerMapper($this->db, $this->logger);
             $creator = $playerMapper->selectById($creatorId);
