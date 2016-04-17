@@ -66,12 +66,14 @@ class Authorization
         $id = $response['id'];
         $username = $response['username'];
         $token = $this->generateNewToken();
+        $roles = intval($response["role_flags"]);
         if ($mapper->setToken($id, $token))
         {
             return array(
                 "auth" => base64_encode($username.":".$token),
                 "token" => $token,
                 "username" => $username,
+                "role_flags" => $roles,
                 "id" => $id);
         }
         throw new Exception("Invalid Credentials", 3001);
