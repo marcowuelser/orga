@@ -30,6 +30,22 @@ class CharacterMapper extends DbMapperAbs
         $this->requireString("name_full", $data, $fields);
         $this->requireString("description", $data, $fields);
 
+        // Check constraint for game_id
+        $gameId = intval($data["game_id"]);
+        $gameMapper = new GameMapper($this->db, $this->logger);
+        $game = $gameMapper->selectById($gameId); // throws if no such game
+
+        // Check constraint for player_id
+        $playerId = intval($data["player_id"]);
+        $playerMapper = new PlayerMapper($this->db, $this->logger);
+        $player = $playerMapper->selectById($playerId); // throws if no such player
+
+        // check for player in same game as character
+        if (intval($player["game_id"]) != $gameId)
+        {
+            throw new Exception("Player $playerId not in game $gameId", 1003);
+        }
+
         // system fields
         $now = date('Y-m-d H:i:s');
         $fields['created'] = $now;

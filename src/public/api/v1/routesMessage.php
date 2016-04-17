@@ -62,17 +62,17 @@ function injectRoutesMessage(\Slim\App $app, array $config)
         if ($scope == ScopeEnum::ScopeUser)
         {
             // game_id is not relevant for user messages
-            $where["destination_id"] = $this->scope->getReferenceId();
+            $where["destination_id"] = $this->scope->getUserId();
         }
-        if ($scope == ScopeEnum::ScopePlayer)
+        if ($scope == ScopeEnum::ScopeGame)
         {
             $where["game_id"] = $this->scope->getGameId();
-            $where["destination_id"] = $this->scope->getReferenceId();
+            $where["destination_id"] = $this->scope->getPlayerId();
         }
         if ($scope == ScopeEnum::ScopeCharacter)
         {
             $where["game_id"] = $this->scope->getGameId();
-            $where["destination_id"] = $this->scope->getReferenceId();
+            $where["destination_id"] = $this->scope->getCharacterId();
         }
         $countInbox = $mapper->selectCount($where);
 
@@ -85,17 +85,17 @@ function injectRoutesMessage(\Slim\App $app, array $config)
         if ($scope == ScopeEnum::ScopeUser)
         {
             // game_id is not relevant for user messages
-            $where["destination_id"] = $this->scope->getReferenceId();
+            $where["destination_id"] = $this->scope->getUserId();
         }
-        if ($scope == ScopeEnum::ScopePlayer)
+        if ($scope == ScopeEnum::ScopeGame)
         {
             $where["game_id"] = $this->scope->getGameId();
-            $where["destination_id"] = $this->scope->getReferenceId();
+            $where["destination_id"] = $this->scope->getPlayerId();
         }
         if ($scope == ScopeEnum::ScopeCharacter)
         {
             $where["game_id"] = $this->scope->getGameId();
-            $where["destination_id"] = $this->scope->getReferenceId();
+            $where["destination_id"] = $this->scope->getCharacterId();
         }
         $countInboxNew = $mapper->selectCount($where);
 
@@ -107,17 +107,17 @@ function injectRoutesMessage(\Slim\App $app, array $config)
         if ($scope == ScopeEnum::ScopeUser)
         {
             // game_id is not relevant for user messages
-            $where["creator_id"] = $this->scope->getReferenceId();
+            $where["creator_id"] = $this->scope->getUserId();
         }
-        if ($scope == ScopeEnum::ScopePlayer)
+        if ($scope == ScopeEnum::ScopeGame)
         {
             $where["game_id"] = $this->scope->getGameId();
-            $where["creator_id"] = $this->scope->getReferenceId();
+            $where["creator_id"] = $this->scope->getPlayerId();
         }
         if ($scope == ScopeEnum::ScopeCharacter)
         {
             $where["game_id"] = $this->scope->getGameId();
-            $where["creator_id"] = $this->scope->getReferenceId();
+            $where["creator_id"] = $this->scope->getCharacterId();
         }
         $countOutbox = $mapper->selectCount($where);
 
@@ -129,17 +129,17 @@ function injectRoutesMessage(\Slim\App $app, array $config)
         if ($scope == ScopeEnum::ScopeUser)
         {
             // game_id is not relevant for user messages
-            $where["creator_id"] = $this->scope->getReferenceId();
+            $where["creator_id"] = $this->scope->getUserId();
         }
-        if ($scope == ScopeEnum::ScopePlayer)
+        if ($scope == ScopeEnum::ScopeGame)
         {
             $where["game_id"] = $this->scope->getGameId();
-            $where["creator_id"] = $this->scope->getReferenceId();
+            $where["creator_id"] = $this->scope->currentPlayerId();
         }
         if ($scope == ScopeEnum::ScopeCharacter)
         {
             $where["game_id"] = $this->scope->getGameId();
-            $where["creator_id"] = $this->scope->getReferenceId();
+            $where["creator_id"] = $this->scope->currentCharacterId();
         }
         $countOutboxUnset = $mapper->selectCount($where);
 
@@ -170,17 +170,17 @@ function injectRoutesMessage(\Slim\App $app, array $config)
         if ($scope == ScopeEnum::ScopeUser)
         {
             // game_id is not relevant for user messages
-            $where["destination_id"] = $this->scope->getReferenceId();
+            $where["destination_id"] = $this->scope->getUserId();
         }
-        if ($scope == ScopeEnum::ScopePlayer)
+        if ($scope == ScopeEnum::ScopeGame)
         {
             $where["game_id"] = $this->scope->getGameId();
-            $where["destination_id"] = $this->scope->getReferenceId();
+            $where["destination_id"] = $this->scope->getPlayerId();
         }
         if ($scope == ScopeEnum::ScopeCharacter)
         {
             $where["game_id"] = $this->scope->getGameId();
-            $where["destination_id"] = $this->scope->getReferenceId();
+            $where["destination_id"] = $this->scope->currentCharacterId();
         }
 
         $mapper = new MessageMapper($this->db, $this->logger);
@@ -208,17 +208,17 @@ function injectRoutesMessage(\Slim\App $app, array $config)
         if ($scope == ScopeEnum::ScopeUser)
         {
             // game_id is not relevant for user messages
-            $where["creator_id"] = $this->scope->getReferenceId();
+            $where["creator_id"] = $this->scope->getUserId();
         }
-        if ($scope == ScopeEnum::ScopePlayer)
+        if ($scope == ScopeEnum::ScopeGame)
         {
             $where["game_id"] = $this->scope->getGameId();
-            $where["creator_id"] = $this->scope->getReferenceId();
+            $where["creator_id"] = $this->scope->currentPlayerId();
         }
         if ($scope == ScopeEnum::ScopeCharacter)
         {
             $where["game_id"] = $this->scope->getGameId();
-            $where["creator_id"] = $this->scope->getReferenceId();
+            $where["creator_id"] = $this->scope->getCharacterId();
         }
 
         $mapper = new MessageMapper($this->db, $this->logger);

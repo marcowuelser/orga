@@ -20,7 +20,10 @@ include_once('./routesUser.php');
 include_once('./routesMessage.php');
 include_once('./routesBoard.php');
 include_once('./routesGame.php');
+include_once('./routesPlayer.php');
+include_once('./routesCharacter.php');
 include_once('./routesRuleset.php');
+include_once('./routesScope.php');
 
 mb_language("uni");
 mb_regex_encoding('UTF-8');
@@ -126,7 +129,10 @@ injectRoutesUser($app, $config);
 injectRoutesMessage($app, $config);
 injectRoutesBoard($app, $config);
 injectRoutesGame($app, $config);
+injectRoutesPlayer($app, $config);
+injectRoutesCharacter($app, $config);
 injectRoutesRuleset($app, $config);
+injectRoutesScope($app, $config);
 
 // CORS
 $corsOptions = array(

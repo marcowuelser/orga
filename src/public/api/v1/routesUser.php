@@ -14,10 +14,6 @@ function injectRoutesUser(\Slim\App $app, array $config)
         $container->get('auth'),
         $authOn ? UserRoleFlag::RoleAdmin : 0);
 
-    $requireAuthor = new UserAuthorizationMiddleware(
-        $container->get('auth'),
-        $authOn ? UserRoleFlag::RoleAuthor : 0);
-
     $requireUser = new UserAuthorizationMiddleware(
         $container->get('auth'),
         $authOn ? UserRoleFlag::RoleUser : 0);

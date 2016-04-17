@@ -1,6 +1,6 @@
 #!/bin/bash
 
 source ./init.sh
-url="$URL/system/user/logoff"
+url="$URL/user/logoff"
 curl -i -H "$CONT" -X GET $url
 

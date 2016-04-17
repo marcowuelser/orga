@@ -28,6 +28,25 @@ class PlayerMapper extends DbMapperAbs
         $this->requireInt("user_id", $data, $fields);
         $this->requireInt("role_flags", $data, $fields);
 
+        // Check constraint for game_id
+        $gameId = intval($data["game_id"]);
+        $gameMapper = new GameMapper($this->db, $this->logger);
+        $game = $gameMapper->selectById($gameId); // throws if no such game
+
+        // Check constraint for user_id
+        $userId = intval($data["user_id"]);
+        $userMapper = new UserMapper($this->db, $this->logger);
+        $user = $userMapper->selectById($userId); // throws if no such user
+
+        // Check constraint for same user only once
+        $where = array("user_id" => $userId, "game_id" => $gameId);
+        $order = array();
+        $duplicate = $this->select($where, $order, 1);
+        if (count($duplicate) > 0)
+        {
+            throw new Exception("User $userId already in game $gameId", 1003);
+        }
+
         // system fields
         $now = date('Y-m-d H:i:s');
         $fields['created'] = $now;
@@ -40,17 +59,7 @@ class PlayerMapper extends DbMapperAbs
 
     protected function onUpdate(array $data) : array
     {
-        $fields = array();
-
-        // user fields
-        $this->requireInt("game_id", $data, $fields);
-        $this->requireInt("user_id", $data, $fields);
-        $this->requireInt("role_flags", $data, $fields);
-
-        // system fields
-        $now = date('Y-m-d H:i:s');
-        $fields['updated'] = $now;
-        return $fields;
+        throw new Exception("Update not permited, use patch", 1003);
     }
 
     protected function onPatch(array $data) : array
@@ -58,8 +67,6 @@ class PlayerMapper extends DbMapperAbs
         $fields = array();
 
         // user fields
-        $this->optionalInt("game_id", $data, $fields);
-        $this->optionalInt("user_id", $data, $fields);
         $this->optionalInt("role_flags", $data, $fields);
 
         if (empty($fields))
