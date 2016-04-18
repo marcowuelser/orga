@@ -4,10 +4,9 @@ declare(strict_types=1);
 class PlayerRoleFlag
 {
     // Use flag type ids so the roles can be combined
-    const RoleObserver = 1;
-    const RolePlayer = 2;
-    const RoleExtra = 4;
-    const RoleDM = 8;
+    const RolePlayer = 1;
+    const RoleExtra = 2;
+    const RoleDM = 4;
 
     public static function toString(int $value) : string
     {
@@ -15,25 +14,37 @@ class PlayerRoleFlag
         {
             return "Unknown";
         }
-
-        switch ($value)
+        if ($value < 0)
         {
-            case PlayerRoleFlag::RoleObserver:
-                return "Observer";
-            case PlayerRoleFlag::RolePlayer:
-                return "Player";
-            case PlayerRoleFlag::RoleExtra:
-                return "Extra";
-            case PlayerRoleFlag::RoleDM:
-                return "DM";
+            return "Unknown";
         }
-        return "Unknown";
+
+        if ($value == 0)
+        {
+            return "Observer";
+        }
+
+        $first = true;
+        $str = "";
+        if ($value & PlayerRoleFlag::RolePlayer)
+        {
+            $str = concatenate($str, "Player", $first);
+        }
+        if ($value & PlayerRoleFlag::RoleExtra)
+        {
+            $str = concatenate($str, "Extra", $first);
+        }
+        if ($value & PlayerRoleFlag::RoleDM)
+        {
+            $str = concatenate($str, "DM", $first);
+        }
+
+        return $str;
     }
 
     public static function toList() : array
     {
         return array(
-            PlayerRoleFlag::RoleObserver,
             PlayerRoleFlag::RolePlayer,
             PlayerRoleFlag::RoleExtra,
             PlayerRoleFlag::RoleDM,

@@ -1,8 +1,9 @@
 <?php
-require_once("src/classes/PlayerRoleFlag.php");
 /**
  * Unit test for the PlayerRoleFlag class.
  */
+include_once("src/classes/PlayerRoleFlag.php");
+include_once("src/util/util.php");
 
 /**
  * Test case.
@@ -16,10 +17,9 @@ class PlayerRoleFlagTest extends PHPUnit_Framework_TestCase
         // Act
 
         // Assert
-        $this->assertEquals(1, PlayerRoleFlag::RoleObserver);
-        $this->assertEquals(2, PlayerRoleFlag::RolePlayer);
-        $this->assertEquals(4, PlayerRoleFlag::RoleExtra);
-        $this->assertEquals(8, PlayerRoleFlag::RoleDM);
+        $this->assertEquals(1, PlayerRoleFlag::RolePlayer);
+        $this->assertEquals(2, PlayerRoleFlag::RoleExtra);
+        $this->assertEquals(4, PlayerRoleFlag::RoleDM);
     }
 
     public function testToString()
@@ -30,22 +30,21 @@ class PlayerRoleFlagTest extends PHPUnit_Framework_TestCase
         // Act
 
         // Assert
-        $this->assertEquals("Observer", $sut::toString(PlayerRoleFlag::RoleObserver));
-        $this->assertEquals("Observer", $sut::toString(1));
+        $this->assertEquals("Observer", $sut::toString(0));
 
         $this->assertEquals("Player", $sut::toString(PlayerRoleFlag::RolePlayer));
-        $this->assertEquals("Player", $sut::toString(2));
+        $this->assertEquals("Player", $sut::toString(1));
 
         $this->assertEquals("Extra", $sut::toString(PlayerRoleFlag::RoleExtra));
-        $this->assertEquals("Extra", $sut::toString(4));
+        $this->assertEquals("Extra", $sut::toString(2));
 
         $this->assertEquals("DM", $sut::toString(PlayerRoleFlag::RoleDM));
-        $this->assertEquals("DM", $sut::toString(8));
+        $this->assertEquals("DM", $sut::toString(4));
+
+        $this->assertEquals("Player, Extra", $sut::toString(3));
+        $this->assertEquals("Player, DM", $sut::toString(5));
 
         $this->assertEquals("Unknown", $sut::toString(-1));
-        $this->assertEquals("Unknown", $sut::toString(0));
-        $this->assertEquals("Unknown", $sut::toString(3));
-        $this->assertEquals("Unknown", $sut::toString(42));
     }
 
     public function testList()
@@ -57,11 +56,10 @@ class PlayerRoleFlagTest extends PHPUnit_Framework_TestCase
         $list = $sut::toList();
 
         // Assert
-        $this->assertEquals(4, count($list));
-        $this->assertEquals(PlayerRoleFlag::RoleObserver, $list[0]);
-        $this->assertEquals(PlayerRoleFlag::RolePlayer, $list[1]);
-        $this->assertEquals(PlayerRoleFlag::RoleExtra, $list[2]);
-        $this->assertEquals(PlayerRoleFlag::RoleDM, $list[3]);
+        $this->assertEquals(3, count($list));
+        $this->assertEquals(PlayerRoleFlag::RolePlayer, $list[0]);
+        $this->assertEquals(PlayerRoleFlag::RoleExtra, $list[1]);
+        $this->assertEquals(PlayerRoleFlag::RoleDM, $list[2]);
     }
 
     public function testArray()
@@ -69,7 +67,6 @@ class PlayerRoleFlagTest extends PHPUnit_Framework_TestCase
         // Arrange
         $sut = new PlayerRoleFlag();
         $expected = array(
-            PlayerRoleFlag::RoleObserver => "Observer",
             PlayerRoleFlag::RolePlayer => "Player",
             PlayerRoleFlag::RoleExtra => "Extra",
             PlayerRoleFlag::RoleDM => "DM",
@@ -79,7 +76,7 @@ class PlayerRoleFlagTest extends PHPUnit_Framework_TestCase
         $array = $sut::toArray();
 
         // Assert
-        $this->assertEquals(4, count($array));
+        $this->assertEquals(3, count($array));
         $this->assertEquals($expected, $array);
     }
 
@@ -87,9 +84,6 @@ class PlayerRoleFlagTest extends PHPUnit_Framework_TestCase
     {
         // Arrange
         $sut = new PlayerRoleFlag();
-        $expectedObserver = array(
-            "id" => PlayerRoleFlag::RoleObserver,
-            "name" => "Observer");
         $expectedPlayer = array(
             "id" => PlayerRoleFlag::RolePlayer,
             "name" => "Player");
@@ -104,11 +98,10 @@ class PlayerRoleFlagTest extends PHPUnit_Framework_TestCase
         $array = $sut::toAssocArray();
 
         // Assert
-        $this->assertEquals(4, count($array));
-        $this->assertEquals($array[0], $expectedObserver);
-        $this->assertEquals($array[1], $expectedPlayer);
-        $this->assertEquals($array[2], $expectedExtra);
-        $this->assertEquals($array[3], $expectedDM);
+        $this->assertEquals(3, count($array));
+        $this->assertEquals($array[0], $expectedPlayer);
+        $this->assertEquals($array[1], $expectedExtra);
+        $this->assertEquals($array[2], $expectedDM);
     }
 
     public function testCheckFlag()
@@ -116,7 +109,6 @@ class PlayerRoleFlagTest extends PHPUnit_Framework_TestCase
         // Arrange
         $sut = new PlayerRoleFlag();
         $all =
-            PlayerRoleFlag::RoleObserver |
             PlayerRoleFlag::RolePlayer |
             PlayerRoleFlag::RoleExtra |
             PlayerRoleFlag::RoleDM;
@@ -124,17 +116,14 @@ class PlayerRoleFlagTest extends PHPUnit_Framework_TestCase
         $dm = PlayerRoleFlag::RoleDM;
 
         // Assert
-        $this->assertEquals(true, $sut::checkFlag($all, PlayerRoleFlag::RoleObserver));
         $this->assertEquals(true, $sut::checkFlag($all, PlayerRoleFlag::RolePlayer));
         $this->assertEquals(true, $sut::checkFlag($all, PlayerRoleFlag::RoleExtra));
         $this->assertEquals(true, $sut::checkFlag($all, PlayerRoleFlag::RoleDM));
 
-        $this->assertEquals(false, $sut::checkFlag($none, PlayerRoleFlag::RoleObserver));
         $this->assertEquals(false, $sut::checkFlag($none, PlayerRoleFlag::RolePlayer));
         $this->assertEquals(false, $sut::checkFlag($none, PlayerRoleFlag::RoleExtra));
         $this->assertEquals(false, $sut::checkFlag($none, PlayerRoleFlag::RoleDM));
 
-        $this->assertEquals(false, $sut::checkFlag($dm, PlayerRoleFlag::RoleObserver));
         $this->assertEquals(false, $sut::checkFlag($dm, PlayerRoleFlag::RolePlayer));
         $this->assertEquals(false, $sut::checkFlag($dm, PlayerRoleFlag::RoleExtra));
         $this->assertEquals(true, $sut::checkFlag($dm, PlayerRoleFlag::RoleDM));
@@ -145,7 +134,6 @@ class PlayerRoleFlagTest extends PHPUnit_Framework_TestCase
         // Arrange
         $sut = new PlayerRoleFlag();
         $all =
-            PlayerRoleFlag::RoleObserver |
             PlayerRoleFlag::RolePlayer |
             PlayerRoleFlag::RoleExtra |
             PlayerRoleFlag::RoleDM;
@@ -163,7 +151,6 @@ class PlayerRoleFlagTest extends PHPUnit_Framework_TestCase
         // Arrange
         $sut = new PlayerRoleFlag();
         $all =
-            PlayerRoleFlag::RoleObserver |
             PlayerRoleFlag::RolePlayer |
             PlayerRoleFlag::RoleExtra |
             PlayerRoleFlag::RoleDM;

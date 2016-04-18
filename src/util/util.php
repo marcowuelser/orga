@@ -11,6 +11,17 @@ function print_r2($val)
     echo  '</pre>';
 }
 
+function concatenate($str, $value, &$first)
+{
+    if (!$first)
+    {
+        $str .= ", ";
+    }
+    $str .= $value;
+    $first = false;
+    return $str;
+}
+
 function getShowInactiveParam(Request $request) : bool
 {
     $allGetVars = $request->getQueryParams();

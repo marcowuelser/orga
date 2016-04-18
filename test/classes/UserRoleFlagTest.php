@@ -1,8 +1,9 @@
 <?php
-require_once("src/classes/UserRoleFlag.php");
 /**
  * Unit test for the UserRoleFlag class.
  */
+include_once("src/classes/UserRoleFlag.php");
+include_once("src/util/util.php");
 
 /**
  * Test case.
@@ -16,8 +17,8 @@ class UserRoleFlagTest extends PHPUnit_Framework_TestCase
         // Act
 
         // Assert
-        $this->assertEquals(1, UserRoleFlag::RoleGuest);
-        $this->assertEquals(2, UserRoleFlag::RoleUser);
+        $this->assertEquals(1, UserRoleFlag::RoleUser);
+        $this->assertEquals(2, UserRoleFlag::RoleOrganisator);
         $this->assertEquals(4, UserRoleFlag::RoleAuthor);
         $this->assertEquals(8, UserRoleFlag::RoleAdmin);
     }
@@ -30,11 +31,13 @@ class UserRoleFlagTest extends PHPUnit_Framework_TestCase
         // Act
 
         // Assert
-        $this->assertEquals("Guest", $sut::toString(UserRoleFlag::RoleGuest));
-        $this->assertEquals("Guest", $sut::toString(1));
+        $this->assertEquals("Guest", $sut::toString(0));
 
         $this->assertEquals("User", $sut::toString(UserRoleFlag::RoleUser));
-        $this->assertEquals("User", $sut::toString(2));
+        $this->assertEquals("User", $sut::toString(1));
+
+        $this->assertEquals("Organisator", $sut::toString(UserRoleFlag::RoleOrganisator));
+        $this->assertEquals("Organisator", $sut::toString(2));
 
         $this->assertEquals("Author", $sut::toString(UserRoleFlag::RoleAuthor));
         $this->assertEquals("Author", $sut::toString(4));
@@ -42,10 +45,12 @@ class UserRoleFlagTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("Admin", $sut::toString(UserRoleFlag::RoleAdmin));
         $this->assertEquals("Admin", $sut::toString(8));
 
+        $this->assertEquals("User, Organisator", $sut::toString(3));
+        $this->assertEquals("Organisator, Author", $sut::toString(6));
+        $this->assertEquals("User, Admin", $sut::toString(9));
+        $this->assertEquals("User, Organisator, Author, Admin", $sut::toString(15));
+
         $this->assertEquals("Unknown", $sut::toString(-1));
-        $this->assertEquals("Unknown", $sut::toString(0));
-        $this->assertEquals("Unknown", $sut::toString(3));
-        $this->assertEquals("Unknown", $sut::toString(42));
     }
 
     public function testList()
@@ -58,8 +63,8 @@ class UserRoleFlagTest extends PHPUnit_Framework_TestCase
 
         // Assert
         $this->assertEquals(4, count($list));
-        $this->assertEquals(UserRoleFlag::RoleGuest, $list[0]);
-        $this->assertEquals(UserRoleFlag::RoleUser, $list[1]);
+        $this->assertEquals(UserRoleFlag::RoleUser, $list[0]);
+        $this->assertEquals(UserRoleFlag::RoleOrganisator, $list[1]);
         $this->assertEquals(UserRoleFlag::RoleAuthor, $list[2]);
         $this->assertEquals(UserRoleFlag::RoleAdmin, $list[3]);
     }
@@ -69,8 +74,8 @@ class UserRoleFlagTest extends PHPUnit_Framework_TestCase
         // Arrange
         $sut = new UserRoleFlag();
         $expected = array(
-            UserRoleFlag::RoleGuest => "Guest",
             UserRoleFlag::RoleUser => "User",
+            UserRoleFlag::RoleOrganisator => "Organisator",
             UserRoleFlag::RoleAuthor => "Author",
             UserRoleFlag::RoleAdmin => "Admin",
         );
@@ -87,12 +92,12 @@ class UserRoleFlagTest extends PHPUnit_Framework_TestCase
     {
         // Arrange
         $sut = new UserRoleFlag();
-        $expectedGuest = array(
-            "id" => UserRoleFlag::RoleGuest,
-            "name" => "Guest");
         $expectedUser = array(
             "id" => UserRoleFlag::RoleUser,
             "name" => "User");
+        $expectedCreator = array(
+            "id" => UserRoleFlag::RoleOrganisator,
+            "name" => "Organisator");
         $expectedAuthor = array(
             "id" => UserRoleFlag::RoleAuthor,
             "name" => "Author");
@@ -105,8 +110,8 @@ class UserRoleFlagTest extends PHPUnit_Framework_TestCase
 
         // Assert
         $this->assertEquals(4, count($array));
-        $this->assertEquals($array[0], $expectedGuest);
-        $this->assertEquals($array[1], $expectedUser);
+        $this->assertEquals($array[0], $expectedUser);
+        $this->assertEquals($array[1], $expectedCreator);
         $this->assertEquals($array[2], $expectedAuthor);
         $this->assertEquals($array[3], $expectedAdmin);
     }
@@ -116,26 +121,26 @@ class UserRoleFlagTest extends PHPUnit_Framework_TestCase
         // Arrange
         $sut = new UserRoleFlag();
         $all =
-            UserRoleFlag::RoleGuest |
             UserRoleFlag::RoleUser |
+            UserRoleFlag::RoleOrganisator |
             UserRoleFlag::RoleAuthor |
             UserRoleFlag::RoleAdmin;
         $none = 0;
         $admin = UserRoleFlag::RoleAdmin;
 
         // Assert
-        $this->assertEquals(true, $sut::checkFlag($all, UserRoleFlag::RoleGuest));
         $this->assertEquals(true, $sut::checkFlag($all, UserRoleFlag::RoleUser));
+        $this->assertEquals(true, $sut::checkFlag($all, UserRoleFlag::RoleOrganisator));
         $this->assertEquals(true, $sut::checkFlag($all, UserRoleFlag::RoleAuthor));
         $this->assertEquals(true, $sut::checkFlag($all, UserRoleFlag::RoleAdmin));
 
-        $this->assertEquals(false, $sut::checkFlag($none, UserRoleFlag::RoleGuest));
         $this->assertEquals(false, $sut::checkFlag($none, UserRoleFlag::RoleUser));
+        $this->assertEquals(false, $sut::checkFlag($none, UserRoleFlag::RoleOrganisator));
         $this->assertEquals(false, $sut::checkFlag($none, UserRoleFlag::RoleAuthor));
         $this->assertEquals(false, $sut::checkFlag($none, UserRoleFlag::RoleAdmin));
 
-        $this->assertEquals(false, $sut::checkFlag($admin, UserRoleFlag::RoleGuest));
         $this->assertEquals(false, $sut::checkFlag($admin, UserRoleFlag::RoleUser));
+        $this->assertEquals(false, $sut::checkFlag($admin, UserRoleFlag::RoleOrganisator));
         $this->assertEquals(false, $sut::checkFlag($admin, UserRoleFlag::RoleAuthor));
         $this->assertEquals(true, $sut::checkFlag($admin, UserRoleFlag::RoleAdmin));
     }
@@ -145,8 +150,8 @@ class UserRoleFlagTest extends PHPUnit_Framework_TestCase
         // Arrange
         $sut = new UserRoleFlag();
         $all =
-            UserRoleFlag::RoleGuest |
             UserRoleFlag::RoleUser |
+            UserRoleFlag::RoleOrganisator |
             UserRoleFlag::RoleAuthor |
             UserRoleFlag::RoleAdmin;
         $none = 0;
@@ -163,8 +168,8 @@ class UserRoleFlagTest extends PHPUnit_Framework_TestCase
         // Arrange
         $sut = new UserRoleFlag();
         $all =
-            UserRoleFlag::RoleGuest |
             UserRoleFlag::RoleUser |
+            UserRoleFlag::RoleOrganisator |
             UserRoleFlag::RoleAuthor |
             UserRoleFlag::RoleAdmin;
         $none = 0;

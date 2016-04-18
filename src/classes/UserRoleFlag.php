@@ -4,8 +4,8 @@ declare(strict_types=1);
 class UserRoleFlag
 {
     // Use flag type ids so the roles can be combined
-    const RoleGuest = 1;
-    const RoleUser = 2;
+    const RoleUser = 1;
+    const RoleOrganisator = 2;
     const RoleAuthor = 4;
     const RoleAdmin = 8;
 
@@ -15,26 +15,43 @@ class UserRoleFlag
         {
             return "Unknown";
         }
-
-        switch ($value)
+        if ($value < 0)
         {
-            case UserRoleFlag::RoleGuest:
-                return "Guest";
-            case UserRoleFlag::RoleUser:
-                return "User";
-            case UserRoleFlag::RoleAuthor:
-                return "Author";
-            case UserRoleFlag::RoleAdmin:
-                return "Admin";
+            return "Unknown";
         }
-        return "Unknown";
+
+        if ($value == 0)
+        {
+            return "Guest";
+        }
+
+        $first = true;
+        $str = "";
+        if ($value & UserRoleFlag::RoleUser)
+        {
+            $str = concatenate($str, "User", $first);
+        }
+        if ($value & UserRoleFlag::RoleOrganisator)
+        {
+            $str = concatenate($str, "Organisator", $first);
+        }
+        if ($value & UserRoleFlag::RoleAuthor)
+        {
+            $str = concatenate($str, "Author", $first);
+        }
+        if ($value & UserRoleFlag::RoleAdmin)
+        {
+            $str = concatenate($str, "Admin", $first);
+        }
+
+        return $str;
     }
 
     public static function toList() : array
     {
         return array(
-            UserRoleFlag::RoleGuest,
             UserRoleFlag::RoleUser,
+            UserRoleFlag::RoleOrganisator,
             UserRoleFlag::RoleAuthor,
             UserRoleFlag::RoleAdmin,
         );
