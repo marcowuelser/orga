@@ -75,7 +75,7 @@ abstract class DbMapperAbs
 
         try
         {
-            $result = $this->db->query("SELECT * FROM $this->table WHERE 1=1;");
+            $result = $this->db->query("SELECT * FROM $this->table WHERE 1=1 ORDER BY default_order ASC;");
 
             $data = $result->fetchAll(PDO::FETCH_ASSOC);
             if ($data)

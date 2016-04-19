@@ -5,6 +5,37 @@ use \Monolog\Logger as Logger;
 
 require_once("classes/DbMapperAbs.php");
 
+/**
+ * Tables
+ * g_character as character, g_game as game, g_player as player, s_user as user
+ *
+ * Fields:
+ * id                 game.id                  GET
+ * game_id                                     POST
+ * game_caption                                
+ * player_id                                   POST PATCH
+ * player_user_name
+ * name_short         game.name_short          POST PATCH
+ * name_full          game.name_full           POST PATCH
+ * description        game.description         POST PATCH
+ * created            game.                    
+ * updated            game.                    
+ * default_order      game.                    POST PATCH
+ * active             game.                    POST PATCH
+ * uri                                         
+ */
+
+
+
+/**
+ * REST creation fields: (FIXED after creation)
+ * - game_id
+ * REST mutable fields:
+ * - player_id (DM)
+ * - name_short
+ * - name_full
+ * - description
+ */
 class CharacterMapper extends DbMapperAbs
 {
     public function __construct(PDO $db, Logger $logger)
@@ -59,9 +90,11 @@ class CharacterMapper extends DbMapperAbs
     protected function onUpdate(array $data) : array
     {
         $fields = array();
+        // require DM
+
 
         // user fields
-        $this->requireInt("game_id", $data, $fields);
+        //$this->requireInt("game_id", $data, $fields);
         $this->requireInt("player_id", $data, $fields);
         $this->requireString("name_short", $data, $fields);
         $this->requireString("name_full", $data, $fields);
@@ -78,7 +111,7 @@ class CharacterMapper extends DbMapperAbs
         $fields = array();
 
         // user fields
-        $this->optionalInt("game_id", $data, $fields);
+        //$this->optionalInt("game_id", $data, $fields);
         $this->optionalInt("player_id", $data, $fields);
         $this->otionalString("name_short", $data, $fields);
         $this->otionalString("name_full", $data, $fields);
@@ -99,11 +132,24 @@ class CharacterMapper extends DbMapperAbs
     protected function toPublicData(array $data) : array
     {
         $id = intval($data["id"]);
+        $playerId = intval($data["player_id"]);
+        $gameId = intval($data["game_id"]);
+        $gameMapper = new GameMapper($this->db, $this->logger);
+        $playerMapper = new PlayerMapper($this->db, $this->logger);
+        $game = $gameMapper->selectById($gameId);
+        $player = $playerMapper->selectById($playerId);
 
         $data['id'] = $id;
         $data["uri"] = $this->getEntryURI($id);
+        $data["game_id"] = $gameId;
+        $data["player_id"] = $playerId;
+        $data["user_name"] = $player["user_name"];
+        $data["game_caption"] = $game["caption"];
         $data['active'] = intval ($data["active"]) != 0;
         $data['default_order'] = intval ($data["default_order"]);
+
+        // TODO add 'scope_alowed' field, true if user is owner of character
+
         return $data;
     }
 }

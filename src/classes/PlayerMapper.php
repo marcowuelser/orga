@@ -5,6 +5,24 @@ use \Monolog\Logger as Logger;
 
 require_once("classes/DbMapperAbs.php");
 
+/**
+ * Tables
+ * g_player as player, g_game as game, s_user as user
+ *
+ * Fields:
+ * id                 player.id                GET
+ * game_id            player.game_id           GET POST(DM)
+ * game_caption       game.caption             GET
+ * user_id            player.user.id           GET POST(DM)
+ * user_name          user.name                GET
+ * role_flags         player.role_flags        GET POST(DM) PATCH(DM)
+ * roles                                       GET
+ * created            player.created           GET
+ * updated            player.updated           GET
+ * default_order      player.default_order     GET POST(DM) PATCH(DM)
+ * active             player.active            GET PATCH(DM)
+ * uri                                         GET
+ */
 class PlayerMapper extends DbMapperAbs
 {
     public function __construct(PDO $db, Logger $logger)
@@ -98,9 +116,11 @@ class PlayerMapper extends DbMapperAbs
         $data["uri"] = $this->getEntryURI($id);
         $data['active'] = intval ($data["active"]) != 0;
         $data['default_order'] = intval ($data["default_order"]);
-        $data['user'] = $user['name'];
-        $data['game'] = $game['caption'];
-        $data['role'] = PlayerRoleFlag::toString($roleFlags);
+        $data["game_id"] = $gameId;
+        $data["user_id"] = $userId;
+        $data['user_name'] = $user['name'];
+        $data['game_caption'] = $game['caption'];
+        $data['roles'] = PlayerRoleFlag::toString($roleFlags);
         return $data;
     }
 }

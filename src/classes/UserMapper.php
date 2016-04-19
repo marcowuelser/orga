@@ -5,6 +5,22 @@ use \Monolog\Logger as Logger;
 
 require_once("classes/DbMapperAbs.php");
 
+/**
+ * Tables
+ * s_user as user
+ *
+ * Fields:
+ * id                 user.id                  GET
+ * username           user.username            GET POST PATCH
+ * name               user.name                GET POST PATCH
+ * role_flags         user.role_flags          GET POST PATCH
+ * roles                                       GET
+ * created            player.                  GET
+ * updated            player.                  GET
+ * default_order      player.                  GET POST PATCH
+ * active             player.                  GET POST PATCH
+ * uri                                         GET
+ */
 class UserMapper extends DbMapperAbs
 {
     public function __construct($db, $logger)
@@ -211,7 +227,7 @@ class UserMapper extends DbMapperAbs
             "username" => $data["username"],
             "name" => $data["name"],
             "role_flags" => $role,
-            "role" => UserRoleFlag::toString($role),
+            "roles" => UserRoleFlag::toString($role),
             "default_order" => $order,
             "active" => intval ($data["active"]) != 0,
             "uri" => $this->getEntryURI($id));

@@ -59,7 +59,8 @@ function injectRoutesCharacter(\Slim\App $app, array $config)
 
         $where = array(
             "game_id" => $gameId,
-            "player_id" => $playerId);
+        //    "player_id" => $playerId,
+        );
         $where["active"] = $showInactive ? 0 : 1;
         $exclude = array();
         $order = array("default_order" => true);

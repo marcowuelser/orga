@@ -85,6 +85,9 @@ class GameMapper extends DbMapperAbs
         $data["uri"] = $this->getEntryURI($id);
         $data['active'] = intval ($data["active"]) != 0;
         $data['default_order'] = intval ($data["default_order"]);
+
+        // TODO add 'scope_alowed' field, true if logged in user is player in game.
+
         return $data;
     }
 }

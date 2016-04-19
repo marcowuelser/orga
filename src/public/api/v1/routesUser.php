@@ -82,7 +82,7 @@ function injectRoutesUser(\Slim\App $app, array $config)
         $mapper = new UserMapper($this->db, $this->logger);
         $users = $mapper->selectAll();
         return responseWithJson($response, $users);
-    })->add($requireAdmin);
+    })->add($requireUser);
 
     $app->post('/user', function (Request $request, Response $response)
     {
@@ -98,7 +98,7 @@ function injectRoutesUser(\Slim\App $app, array $config)
         $mapper = new UserMapper($this->db, $this->logger);
         $users = $mapper->selectById($id);
         return responseWithJson($response, $users);
-    })->add($requireAdmin);
+    })->add($requireUser);
 
     $app->patch('/user/{id}', function (Request $request, Response $response, $args)
     {
