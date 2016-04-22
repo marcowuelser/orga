@@ -133,8 +133,18 @@ function getParentParam(Request $request) : int
     return $c;
 }
 
+/**
+ * Creates a JSON response.
+ * @param $response      The response object (read only).
+ * @param $data          The data array to add to the response as body.
+ * @param $okStatusCode  The HTTP status code to use if the data does not
+ *                       contain an "error" and "http_status_code" field.
+ * @return The changed response object.
+ */
 function responseWithJson(Response $response, array $data, int $okStatusCode = 200) : Response
 {
+    $response = $response->withHeader('Content-Type', 'application/json;charset=utf-8');
+
     if (isErrorResponse($data))
     {
         $response = $response->withStatus($data["http_status_code"]);
@@ -144,12 +154,16 @@ function responseWithJson(Response $response, array $data, int $okStatusCode = 2
         $response = $response->withStatus($okStatusCode);
     }
 
-    $response = $response->withHeader('Content-Type', 'application/json;charset=utf-8');
     $body = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES |  JSON_UNESCAPED_UNICODE);
     $response->getBody()->write($body);
     return $response;
 }
 
+/**
+ * Checks if the array represents an error response.
+ * @param $data  The data array to check.
+ * @return True if the data array contains and "error" field, false otherwise.
+ */
 function isErrorResponse(array $data) : bool
 {
     if (is_array($data))
