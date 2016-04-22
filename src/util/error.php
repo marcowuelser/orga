@@ -1,4 +1,14 @@
 <?php
+/**
+ * ORGA Server
+ * @link https://github.com/marcowuelser/orga_server
+ * @copyright (c) 2016 @author Marco Wuelser @license MIT (see /LICENSE)
+ *
+ * This file contains error code definitions.
+ *
+ * TODO: Use ErrorCodeEnum instead and remove this !.
+ */
+
 declare(strict_types=1);
 
 use \Psr\Http\Message\ResponseInterface as Response;

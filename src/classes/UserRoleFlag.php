@@ -25,23 +25,22 @@ class UserRoleFlag
             return "Guest";
         }
 
-        $first = true;
         $str = "";
         if ($value & UserRoleFlag::RoleUser)
         {
-            $str = concatenate($str, "User", $first);
+            $str = concatenate($str, "User");
         }
         if ($value & UserRoleFlag::RoleOrganisator)
         {
-            $str = concatenate($str, "Organisator", $first);
+            $str = concatenate($str, "Organisator");
         }
         if ($value & UserRoleFlag::RoleAuthor)
         {
-            $str = concatenate($str, "Author", $first);
+            $str = concatenate($str, "Author");
         }
         if ($value & UserRoleFlag::RoleAdmin)
         {
-            $str = concatenate($str, "Admin", $first);
+            $str = concatenate($str, "Admin");
         }
 
         return $str;

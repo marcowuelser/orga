@@ -1,9 +1,25 @@
 <?php
+/**
+ * ORGA Server
+ * @link https://github.com/marcowuelser/orga_server
+ * @copyright (c) 2016 @author Marco Wuelser @license MIT (see /LICENSE)
+ *
+ * This file contains global utility methods.
+ *
+ * TODO: Move the response and request utilities to a dedicated header.
+ */
+
 declare(strict_types=1);
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
+/**
+ * Prints the contents of the variable recursive.
+ * Places the output inside a HTML \<pre\> tag.
+ * @param $val  The variable to dump.
+ * @return void
+ */
 function print_r2($val)
 {
     echo '<pre>';
@@ -11,14 +27,20 @@ function print_r2($val)
     echo  '</pre>';
 }
 
-function concatenate($str, $value, &$first)
+/**
+ * Adds the given value to the string.
+ * Adds comas to separate the entries.
+ * @param  $str    The string to add the value to.
+ * @param  $value  The value to add.
+ * @return The concatenated string.
+ */
+function concatenate(string $str, string $value)
 {
-    if (!$first)
+    if ($str != "")
     {
         $str .= ", ";
     }
     $str .= $value;
-    $first = false;
     return $str;
 }
 

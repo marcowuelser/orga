@@ -24,19 +24,18 @@ class PlayerRoleFlag
             return "Observer";
         }
 
-        $first = true;
         $str = "";
         if ($value & PlayerRoleFlag::RolePlayer)
         {
-            $str = concatenate($str, "Player", $first);
+            $str = concatenate($str, "Player");
         }
         if ($value & PlayerRoleFlag::RoleExtra)
         {
-            $str = concatenate($str, "Extra", $first);
+            $str = concatenate($str, "Extra");
         }
         if ($value & PlayerRoleFlag::RoleDM)
         {
-            $str = concatenate($str, "DM", $first);
+            $str = concatenate($str, "DM");
         }
 
         return $str;
