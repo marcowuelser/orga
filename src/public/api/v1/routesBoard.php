@@ -32,7 +32,7 @@ function injectRoutesBoard(\Slim\App $app, array $config)
 
         $showInactive = getShowInactiveParam($request);
         $maxCount = getMaxCountParam($request);
-        $parent = getParentParam($request);
+        $parentId = getParentParam($request);
 
         $scope = $this->scope->getScope();
         $where = array(
@@ -41,7 +41,7 @@ function injectRoutesBoard(\Slim\App $app, array $config)
         );
         if ($parent > 0)
         {
-            $where["parent_id"] = $parent;
+            $where["parent_id"] = $parentId;
         }
         else
         {

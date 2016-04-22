@@ -44,12 +44,18 @@ function concatenate(string $str, string $value)
     return $str;
 }
 
-function getShowInactiveParam(Request $request) : bool
+/**
+ * Checks for a parameter in the HTTP query string.
+ * @param $request  The received request.
+ * @param $name     The name of the parameter.
+ * @return True if the parameter is set in the request, false otherwise.
+ */
+function isRequestParameter(Request $request, string $name) : bool
 {
     $allGetVars = $request->getQueryParams();
     foreach($allGetVars as $key => $param)
     {
-        if ($key == "show_deleted")
+        if ($key == $name)
         {
             return true;
         }
@@ -57,39 +63,74 @@ function getShowInactiveParam(Request $request) : bool
     return false;
 }
 
-function getMaxCountParam(Request $request) : int
+/**
+ * Gets a parameter from the HTTP query string.
+ * @param $request  The received request.
+ * @param $name     The name of the parameter.
+ * @return The value of the parameter or an empty string.
+ */
+function getRequestParameter(Request $request, string $name) : string
 {
-    $maxCount = 100;
     $allGetVars = $request->getQueryParams();
     foreach($allGetVars as $key => $param)
     {
-        if ($key == "max_count")
+        if ($key == $name)
         {
-            $c = intval($param);
-            if ($c > 0 && $c <= $maxCount)
-            {
-                return $c;
-            }
+            return $param;
         }
     }
-    return $maxCount;
+    return "";
 }
 
+/**
+ * Gets the show_deleted parameter from the HTTP query string.
+ * @param $request  The received request.
+ * @return True if the parameter is set in the request, false otherwise.
+ */
+function getShowInactiveParam(Request $request) : bool
+{
+    return isRequestParameter($request, "show_deleted");
+}
+
+/**
+ * Gets the max_count parameter from the HTTP query string.
+ * @param $request  The received request.
+ * @param $maxCount  The value is limited to this value.
+ * @return A value between 1 and maxCount.
+ */
+function getMaxCountParam(Request $request, $maxCount = 100) : int
+{
+    $value = getRequestParameter($request, "max_count");
+    if ($value == "")
+    {
+        return $maxCount;
+    }
+    $c = intval($param);
+    if ($c <= 0 || $c > $maxCount)
+    {
+        return $maxCount;
+    }
+    return $c;
+}
+
+/**
+ * Gets the parent_id parameter from the HTTP query string.
+ * @param $request  The received request.
+ * @return The parent_id or -1 if none.
+ */
 function getParentParam(Request $request) : int
 {
-    $allGetVars = $request->getQueryParams();
-    foreach($allGetVars as $key => $param)
+    $value = getRequestParameter($request, "parent_id");
+    if ($value == "")
     {
-        if ($key == "parent")
-        {
-            $c = intval($param);
-            if ($c > 0)
-            {
-                return $c;
-            }
-        }
+        return -1;
     }
-    return -1;
+    $c = intval($param);
+    if ($c < 0)
+    {
+        return -1;
+    }
+    return $c;
 }
 
 function responseWithJson(Response $response, array $data, int $okStatusCode = 200) : Response
