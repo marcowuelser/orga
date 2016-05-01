@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once("util/error.php");
+use \ORGA\Error\ErrorCode as ErrorCode;
 
 abstract class DbMapperAbs
 {
@@ -38,7 +38,7 @@ abstract class DbMapperAbs
         }
         catch (PDOException $ex)
         {
-            throw new Exception($ex->getMessage(), 2001);
+            throw new Exception($ex->getMessage(), ErrorCode::DB_ERROR);
         }
     }
 
@@ -65,7 +65,7 @@ abstract class DbMapperAbs
         }
         catch (PDOException $ex)
         {
-            throw new Exception($ex->getMessage(), 2001);
+            throw new Exception($ex->getMessage(), ErrorCode::DB_ERROR);
         }
     }
 
@@ -93,7 +93,7 @@ abstract class DbMapperAbs
         }
         catch (PDOException $ex)
         {
-            throw new Exception($ex->getMessage(), 2001);
+            throw new Exception($ex->getMessage(), ErrorCode::DB_ERROR);
         }
     }
 
@@ -111,12 +111,12 @@ abstract class DbMapperAbs
             }
             else
             {
-                throw new Exception("$this->name_single with id $id not found", 1001);
+                throw new Exception("$this->name_single with id $id not found", ErrorCode::NOT_FOUND);
             }
         }
         catch (PDOException $ex)
         {
-            throw new Exception($ex->getMessage(), 2001);
+            throw new Exception($ex->getMessage(), ErrorCode::DB_ERROR);
         }
     }
 
@@ -125,7 +125,7 @@ abstract class DbMapperAbs
         $this->logger->addInfo("Add new $this->name_single");
         if ($data == null)
         {
-            throw new Exception("HTTP body is empty", 1003);
+            throw new Exception("HTTP body is empty", ErrorCode::INVALID_REQUEST);
         }
 
         try
@@ -141,7 +141,7 @@ abstract class DbMapperAbs
         }
         catch (PDOException $ex)
         {
-            throw new Exception($ex->getMessage(), 2001);
+            throw new Exception($ex->getMessage(), ErrorCode::DB_ERROR);
         }
     }
 
@@ -149,7 +149,7 @@ abstract class DbMapperAbs
     {
         if ($data == null)
         {
-            throw new Exception("HTTP body is empty", 1003);
+            throw new Exception("HTTP body is empty", ErrorCode::INVALID_REQUEST);
         }
 
         $this->logger->addInfo("Update $this->name_single with id $id");
@@ -166,7 +166,7 @@ abstract class DbMapperAbs
         }
         catch (PDOException $ex)
         {
-            throw new Exception($ex->getMessage(), 2001);
+            throw new Exception($ex->getMessage(), ErrorCode::DB_ERROR);
         }
     }
 
@@ -174,7 +174,7 @@ abstract class DbMapperAbs
     {
         if ($data == null)
         {
-            throw new Exception("HTTP body is empty", 1003);
+            throw new Exception("HTTP body is empty", ErrorCode::INVALID_REQUEST);
         }
 
         $this->logger->addInfo("Patch $this->name_single with id $id");
@@ -184,7 +184,7 @@ abstract class DbMapperAbs
             $fields = $this->onPatch($data);
             if (empty($fields))
             {
-                throw new Exception("No fields in patch request", 1003);
+                throw new Exception("No fields in patch request", ErrorCode::INVALID_REQUEST);
             }
             $sql = $this->createSqlUpdate($this->table, $fields);
             $stmt = $this->db->prepare($sql);
@@ -195,7 +195,7 @@ abstract class DbMapperAbs
         }
         catch (PDOException $ex)
         {
-            throw new Exception($ex->getMessage(), 2001);
+            throw new Exception($ex->getMessage(), ErrorCode::DB_ERROR);
         }
     }
 
@@ -215,7 +215,7 @@ abstract class DbMapperAbs
         }
         catch (PDOException $ex)
         {
-            throw new Exception($ex->getMessage(), 2001);
+            throw new Exception($ex->getMessage(), ErrorCode::DB_ERROR);
         }
     }
 
@@ -225,13 +225,13 @@ abstract class DbMapperAbs
     {
         if (!array_key_exists($field, $data))
         {
-            throw new Exception("Field $field is missing", 1003);
+            throw new Exception("Field $field is missing", ErrorCode::INVALID_REQUEST);
         }
         $value = filter_var($data[$field], FILTER_SANITIZE_STRING);
 
         if (!is_string($value))
         {
-            throw new Exception("Field $field is no string", 1003);
+            throw new Exception("Field $field is no string", ErrorCode::INVALID_REQUEST);
         }
 
         $fields[$field] = $value;
@@ -241,12 +241,12 @@ abstract class DbMapperAbs
     {
         if (!array_key_exists($field, $data))
         {
-            throw new Exception("Field $field is missing", 1003);
+            throw new Exception("Field $field is missing", ErrorCode::INVALID_REQUEST);
         }
         $value = $data[$field];
         if (!is_int($value) && !is_bool($value))
         {
-            throw new Exception("Field $field is no bool", 1003);
+            throw new Exception("Field $field is no bool", ErrorCode::INVALID_REQUEST);
         }
         $value = $value ? 1 : 0;
 
@@ -257,12 +257,12 @@ abstract class DbMapperAbs
     {
         if (!array_key_exists($field, $data))
         {
-            throw new Exception("Field $field is missing", 1003);
+            throw new Exception("Field $field is missing", ErrorCode::INVALID_REQUEST);
         }
         $value = $data[$field];
         if (!is_int($value))
         {
-            throw new Exception("Field $field is no int", 1003);
+            throw new Exception("Field $field is no int", ErrorCode::INVALID_REQUEST);
         }
 
         $fields[$field] = $value;

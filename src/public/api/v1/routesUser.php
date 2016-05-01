@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
+use \ORGA\Error\ErrorCode as ErrorCode;
 
 function injectRoutesUser(\Slim\App $app, array $config)
 {
@@ -31,12 +32,14 @@ function injectRoutesUser(\Slim\App $app, array $config)
         $password = "";
         if (!Authorization::parseCredentials($request, $username, $password))
         {
-            return responseWithJsonError($response, 3001, "No credentials");
+            return $this->errorList->createResponse(
+                $response, ErrorCode::AUTHENTICATION_FAILED, "No credentials");
         }
 
         $this->logger->addInfo("Login user $username");
         $mapper = new UserMapper($this->db, $this->logger);
         $data = $this->auth->loginUser($username, $password, $mapper);
+        $this->logger->addInfo("Login is valid");
         return responseWithJson($response, $data);
     });
 

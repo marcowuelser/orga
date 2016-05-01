@@ -2,8 +2,7 @@
 declare(strict_types=1);
 
 use \Monolog\Logger as Logger;
-
-require_once("classes/DbMapperAbs.php");
+use \ORGA\Error\ErrorCode as ErrorCode;
 
 class SystemMapper extends DbMapperAbs
 {

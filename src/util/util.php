@@ -36,6 +36,10 @@ function print_r2($val)
  */
 function concatenate(string $str, string $value)
 {
+    if ($value == "")
+    {
+        return $str;
+    }
     if ($str != "")
     {
         $str .= ", ";

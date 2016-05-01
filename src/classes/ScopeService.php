@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use \Monolog\Logger as Logger;
+use \ORGA\Error\ErrorCode as ErrorCode;
 
 class ScopeService
 {
@@ -88,12 +89,12 @@ class ScopeService
 
         if (!ScopeEnum::isValid($this->currentScope))
         {
-            throw new Exception("Invalid scope $this->currentScope", 1003);
+            throw new Exception("Invalid scope $this->currentScope", ErrorCode::INVALID_REQUEST);
         }
 
         if (!$hasScope)
         {
-            throw new Exception("No scope", 1003);
+            throw new Exception("No scope", ErrorCode::INVALID_REQUEST);
         }
 
         switch ($this->currentScope)
@@ -109,7 +110,7 @@ class ScopeService
                     // assert that the current user has the rights to do that
                     if (!$auth->isCurrentUserInRole(UserRoleFlag::RoleAdmin))
                     {
-                        throw new Exception("Admin privileges required", 1003);
+                        throw new Exception("Admin privileges required", ErrorCode::INVALID_REQUEST);
                     }
                 }
                 $user = $userMapper->selectById($this->currentReferenceId);
@@ -123,7 +124,7 @@ class ScopeService
             case ScopeEnum::ScopeGame:
                 if (!$hasReference)
                 {
-                    throw new Exception("No player reference", 1003);
+                    throw new Exception("No player reference", ErrorCode::INVALID_REQUEST);
                 }
 
                 // get game from player entry
@@ -141,7 +142,7 @@ class ScopeService
                 $players = $playerMapper->select($where, array(), 10);
                 if (count($players) < 1)
                 {
-                    throw new Exception("User $userId has no player entry in game $this->currentGameId", 1003);
+                    throw new Exception("User $userId has no player entry in game $this->currentGameId", ErrorCode::INVALID_REQUEST);
                 }
                 $player = $players[0];
                 $this->currentPlayerId = intval($player["id"]);
@@ -150,7 +151,7 @@ class ScopeService
                 // assert that the player matches the gurrent user.
                 if ($this->currentUserId != $auth->getCurrentUserId())
                 {
-                    throw new Exception("Player not equal current user", 1003);
+                    throw new Exception("Player not equal current user", ErrorCode::INVALID_REQUEST);
                 }
 
                 $this->currentCharacterId = -1;
@@ -159,7 +160,7 @@ class ScopeService
             case ScopeEnum::ScopeCharacter:
                 if (!$hasReference)
                 {
-                    throw new Exception("No character reference", 1003);
+                    throw new Exception("No character reference", ErrorCode::INVALID_REQUEST);
                 }
                 $character = $characterMapper->selectById($this->currentReferenceId);
                 $this->currentCharacterId = $this->currentReferenceId;
@@ -181,13 +182,13 @@ class ScopeService
                 // assert that the player matches the current user,
                 if ($this->currentUserId != $auth->getCurrentUserId())
                 {
-                    throw new Exception("Character does not belong to current user", 1003);
+                    throw new Exception("Character does not belong to current user", ErrorCode::INVALID_REQUEST);
                 }
 
                 $gameId = intval($player["game_id"]);
                 if ($gameId != $this->currentGameId)
                 {
-                    throw new Exception("User is not player in this game", 1003);
+                    throw new Exception("User is not player in this game", ErrorCode::INVALID_REQUEST);
                 }
                 break;
         }

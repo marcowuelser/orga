@@ -1,9 +1,11 @@
 <?php
 /**
+ * ORGA Server
+ * @link https://github.com/marcowuelser/orga_server
+ * @copyright (c) 2016 @author Marco Wuelser @license MIT (see /LICENSE)
+ *
  * Unit test for the PlayerRoleFlag class.
  */
-include_once("src/classes/PlayerRoleFlag.php");
-include_once("src/util/util.php");
 
 /**
  * Test case.

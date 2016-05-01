@@ -4,6 +4,7 @@ declare(strict_types=1);
 use \Monolog\Logger as Logger;
 use \Psr\Http\Message\ServerRequestInterface as RequestInterface;
 use \Psr\Http\Message\ResponseInterface as ResponseInterface;
+use \ORGA\Error\ErrorCode as ErrorCode;
 
 class TokenAuthenticationMiddleware
 {

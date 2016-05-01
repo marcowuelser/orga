@@ -1,6 +1,9 @@
 <?php
-require_once("src/classes/ScopeEnum.php");
 /**
+ * ORGA Server
+ * @link https://github.com/marcowuelser/orga_server
+ * @copyright (c) 2016 @author Marco Wuelser @license MIT (see /LICENSE)
+ *
  * Unit test for the ScopeEnum class.
  */
 

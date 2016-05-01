@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
+use \ORGA\Error\ErrorCode as ErrorCode;
 
 class Authorization
 {
@@ -76,7 +77,7 @@ class Authorization
                 "role_flags" => $roles,
                 "id" => $id);
         }
-        throw new Exception("Invalid Credentials", 3001);
+        throw new Exception("Invalid Credentials", ErrorCode::AUTHENTICATION_FAILED);
     }
 
     public function logoutCurrentUser(UserMapper $mapper)

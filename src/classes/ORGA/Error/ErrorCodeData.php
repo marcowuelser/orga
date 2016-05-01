@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 /**
  * ORGA Server
  * @link https://github.com/marcowuelser/orga_server
@@ -8,7 +7,8 @@ declare(strict_types=1);
  * This file defines the ErrorCode class.
  */
 
-namespace ORGA;
+declare(strict_types=1);
+namespace ORGA\Error;
 
 /**
  * Definition of an ORGA API error code.
@@ -37,7 +37,7 @@ class ErrorCodeData
     {
         $this->code = $code;
         $this->text = $text;
-        $this->code = $httpStatusCode;
+        $this->httpStatusCode = $httpStatusCode;
     }
 
     /**

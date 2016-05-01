@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 /**
  * ORGA Server
  * @link https://github.com/marcowuelser/orga_server
@@ -8,7 +7,8 @@ declare(strict_types=1);
  * This file defines the HTTP status codes used in ORGA.
  */
 
-namespace ORGA;
+declare(strict_types=1);
+namespace ORGA\Error;
 
 /**
  * All HTTP status codes that can be returned by the ORGA API.

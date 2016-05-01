@@ -2,8 +2,7 @@
 declare(strict_types=1);
 
 use \Monolog\Logger as Logger;
-
-require_once("classes/DbMapperAbs.php");
+use \ORGA\Error\ErrorCode as ErrorCode;
 
 /**
  * Tables
@@ -45,12 +44,12 @@ class UserMapper extends DbMapperAbs
             }
             else
             {
-                throw new Exception("User with name $name not found", 1001);
+                throw new Exception("User with name $name not found", ErrorCode::NOT_FOUND);
             }
         }
         catch (PDOException $ex)
         {
-            throw new Exception($ex->getMessage(), 2001);
+            throw new Exception($ex->getMessage(), ErrorCode::DB_ERROR);
         }
     }
 
@@ -62,18 +61,18 @@ class UserMapper extends DbMapperAbs
             $stmt = $this->db->prepare($sql);
             if (!$stmt->execute())
             {
-                throw new Exception("Invalid credentials", 3001);
+                throw new Exception("Invalid credentials", ErrorCode::AUTHENTICATION_FAILED);
             }
             if ($stmt->rowCount() < 1)
             {
-                throw new Exception("Invalid credentials", 3001);
+                throw new Exception("Invalid credentials", ErrorCode::AUTHENTICATION_FAILED);
             }
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
             return $this->toPublicData($data);
         }
         catch (PDOException $ex)
         {
-            throw new Exception($ex->getMessage(), 2001);
+            throw new Exception($ex->getMessage(), ErrorCode::DB_ERROR);
         }
     }
 
@@ -85,18 +84,18 @@ class UserMapper extends DbMapperAbs
             $stmt = $this->db->prepare($sql);
             if (!$stmt->execute())
             {
-                throw new Exception("Invalid token", 1001);
+                throw new Exception("Invalid token", ErrorCode::NOT_FOUND);
             }
             if ($stmt->rowCount() < 1)
             {
-                throw new Exception("Invalid token", 1001);
+                throw new Exception("Invalid token", ErrorCode::NOT_FOUND);
             }
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
             return $this->toPublicData($data);
         }
         catch (PDOException $ex)
         {
-            throw new Exception($ex->getMessage(), 2001);
+            throw new Exception($ex->getMessage(), ErrorCode::DB_ERROR);
         }
     }
 
@@ -116,7 +115,7 @@ class UserMapper extends DbMapperAbs
         }
         catch (PDOException $ex)
         {
-            throw new Exception($ex->getMessage(), 2001);
+            throw new Exception($ex->getMessage(), ErrorCode::DB_ERROR);
         }
     }
 
@@ -131,7 +130,7 @@ class UserMapper extends DbMapperAbs
         }
         catch (PDOException $ex)
         {
-            throw new Exception($ex->getMessage(), 2001);
+            throw new Exception($ex->getMessage(), ErrorCode::DB_ERROR);
         }
     }
 
@@ -147,7 +146,7 @@ class UserMapper extends DbMapperAbs
             $stmt->bindValue(":field_id", $id, PDO::PARAM_INT);
             if (!$stmt->execute())
             {
-                throw new Exception("Could not set password for user id $id", 2001);
+                throw new Exception("Could not set password for user id $id", ErrorCode::DB_ERROR);
             }
             else
             {
@@ -156,7 +155,7 @@ class UserMapper extends DbMapperAbs
         }
         catch (PDOException $ex)
         {
-            throw new Exception($ex->getMessage(), 2001);
+            throw new Exception($ex->getMessage(), ErrorCode::DB_ERROR);
         }
     }
 
@@ -211,7 +210,7 @@ class UserMapper extends DbMapperAbs
         $this->optionalBool("active", $data, $fields);
         if (empty($fields))
         {
-            throw new Exception("No fields in patch request");
+            throw new Exception("No fields in patch request", ErrorCode::INVALID_REQUEST);
         }
 
         return $fields;

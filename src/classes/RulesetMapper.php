@@ -2,8 +2,7 @@
 declare(strict_types=1);
 
 use \Monolog\Logger as Logger;
-
-require_once("classes/DbMapperAbs.php");
+use \ORGA\Error\ErrorCode as ErrorCode;
 
 class RulesetMapper extends DbMapperAbs
 {
@@ -75,7 +74,7 @@ class RulesetMapper extends DbMapperAbs
         $this->optionalInt("default_order", $data, $fields);
         if (empty($fields))
         {
-            throw new Exception("No fields in patch request");
+            throw new Exception("No fields in patch request", ErrorCode::INVALID_REQUEST);
         }
 
         // system fields

@@ -1,9 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use \Monolog\Logger as Logger;
-
-require_once("classes/DbMapperAbs.php");
+use \ORGA\Error\ErrorCode as ErrorCode;
 
 /**
  * Tables
@@ -62,7 +60,7 @@ class PlayerMapper extends DbMapperAbs
         $duplicate = $this->select($where, $order, 1);
         if (count($duplicate) > 0)
         {
-            throw new Exception("User $userId already in game $gameId", 1003);
+            throw new Exception("User $userId already in game $gameId", ErrorCode::INVALID_REQUEST);
         }
 
         // system fields
@@ -77,7 +75,7 @@ class PlayerMapper extends DbMapperAbs
 
     protected function onUpdate(array $data) : array
     {
-        throw new Exception("Update not permited, use patch", 1003);
+        throw new Exception("Update not permited, use patch", ErrorCode::INVALID_REQUEST);
     }
 
     protected function onPatch(array $data) : array
@@ -89,7 +87,7 @@ class PlayerMapper extends DbMapperAbs
 
         if (empty($fields))
         {
-            throw new Exception("No fields in patch request");
+            throw new Exception("No fields in patch request", ErrorCode::INVALID_REQUEST);
         }
 
         // system fields

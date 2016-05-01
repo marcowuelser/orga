@@ -2,8 +2,7 @@
 declare(strict_types=1);
 
 use \Monolog\Logger as Logger;
-
-require_once("classes/DbMapperAbs.php");
+use \ORGA\Error\ErrorCode as ErrorCode;
 
 class BoardEntryMapper extends DbMapperAbs
 {
@@ -77,7 +76,7 @@ class BoardEntryMapper extends DbMapperAbs
 
         if (empty($fields))
         {
-            throw new Exception("No fields in patch request");
+            throw new Exception("No fields in patch request", ErrorCode::INVALID_REQUEST);
         }
 
         // system fields

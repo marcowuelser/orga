@@ -2,8 +2,7 @@
 declare(strict_types=1);
 
 use \Monolog\Logger as Logger;
-
-require_once("classes/DbMapperAbs.php");
+use \ORGA\Error\ErrorCode as ErrorCode;
 
 /**
  * Tables
@@ -74,7 +73,7 @@ class CharacterMapper extends DbMapperAbs
         // check for player in same game as character
         if (intval($player["game_id"]) != $gameId)
         {
-            throw new Exception("Player $playerId not in game $gameId", 1003);
+            throw new Exception("Player $playerId not in game $gameId", ErrorCode::INVALID_REQUEST);
         }
 
         // system fields
@@ -119,7 +118,7 @@ class CharacterMapper extends DbMapperAbs
 
         if (empty($fields))
         {
-            throw new Exception("No fields in patch request");
+            throw new Exception("No fields in patch request", ErrorCode::INVALID_REQUEST);
         }
 
         // system fields

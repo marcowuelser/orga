@@ -12,18 +12,18 @@ require_once('vendor/autoload.php');
 // Project
 require_once('../../../config.php');
 require_once('version.php');
-include_once('util/util.php');
+require_once('util/util.php');
 
 // Local
-include_once('./routesSystem.php');
-include_once('./routesUser.php');
-include_once('./routesMessage.php');
-include_once('./routesBoard.php');
-include_once('./routesGame.php');
-include_once('./routesPlayer.php');
-include_once('./routesCharacter.php');
-include_once('./routesRuleset.php');
-include_once('./routesScope.php');
+require_once('./routesSystem.php');
+require_once('./routesUser.php');
+require_once('./routesMessage.php');
+require_once('./routesBoard.php');
+require_once('./routesGame.php');
+require_once('./routesPlayer.php');
+require_once('./routesCharacter.php');
+require_once('./routesRuleset.php');
+require_once('./routesScope.php');
 
 mb_language("uni");
 mb_regex_encoding('UTF-8');
@@ -52,17 +52,6 @@ $app = new \Slim\App(
 // Create containers
 $container = $app->getContainer();
 
-// Error handler
-
-$container['errorHandler'] = function ($c) {
-    return function ($request, $response, $exception) use ($c) {
-        return responseWithJsonError(
-            $response,
-            $exception->getCode(),
-            $exception->getMessage());
-    };
-};
-
 // Logger
 $container['logger'] = function($c)
 {
@@ -70,6 +59,29 @@ $container['logger'] = function($c)
     $file_handler = new \Monolog\Handler\StreamHandler("../logs/app.log");
     $logger->pushHandler($file_handler);
     return $logger;
+};
+
+// Error list
+$container['errorList'] = function ($c)
+{
+    $errorCodeList = new \ORGA\Error\ErrorCodeList();
+    return $errorCodeList;
+};
+
+// Error handler
+$container['errorHandler'] = function ($c)
+{
+    return function ($request, $response, $exception) use ($c)
+    {
+        $errorCodeList = $c['errorList'];
+        $logger = $c['logger'];
+        $error = $errorCodeList->getData($exception->getCode());
+        $data = $error->toResponseData($exception->getMessage());
+        $response = responseWithJson($response, $data);
+        $logger->addError(
+            "Exception: ".$error->code." (".$error->text."): '".$exception->getMessage()."' returned HTTP status code ".$error->httpStatusCode);
+        return $response;
+    };
 };
 
 // Database access
